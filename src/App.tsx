@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, GridItem, Flex } from '@chakra-ui/react';
 import NavBar from './components/navbar';
-import FrontPage from './components/frontpage';
+import FrontPage from './components/authentication/frontpage';
 
 function App() {
   return (

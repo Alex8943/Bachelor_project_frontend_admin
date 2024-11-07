@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Box, Grid, Heading, Input, Button, Checkbox, Text, VStack } from '@chakra-ui/react';
-import SignUp from './signup';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import SignUp from './signup';
+import Dashboard from '../protected/dashboard';
+import ProtectedRoute from '../isProtected';
 import { login } from '../../service/apiclient';
+
 
 const FrontPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -18,8 +21,10 @@ const FrontPage = () => {
     try {
       const response = await login({ email: formData.email, password: formData.password });
       setMessage('Login successful!');
-      console.log('Login response:', response);
-      // Redirect or save token here if needed
+      localStorage.setItem('authToken', response.token);
+
+      // Redirect to /dashboard
+      window.location.href = '/dashboard';
     } catch (error) {
       setMessage('Login failed. Please check your credentials.');
       console.error('Login error:', error);
@@ -31,7 +36,8 @@ const FrontPage = () => {
       <Routes>
         {/* Route for the signup page */}
         <Route path="/signup" element={<SignUp />} />
-        {/* Default route for the frontpage */}
+
+        {/* Default route for the login/frontpage */}
         <Route
           path="/"
           element={
@@ -82,6 +88,16 @@ const FrontPage = () => {
                 </form>
               </Box>
             </Grid>
+          }
+        />
+
+        {/* Protected Dashboard Route */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
           }
         />
       </Routes>

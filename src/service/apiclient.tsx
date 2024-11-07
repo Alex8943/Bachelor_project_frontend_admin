@@ -29,6 +29,26 @@ export const signup = async ({name, lastname, email, password}) => {
     throw error;
   }
 };
+
+export const getUserName = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/user`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    throw error;
+  }
+};
+
+export const getReviews = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/reviews`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+}
  
 
 

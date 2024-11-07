@@ -20,9 +20,9 @@ export const login = async ({ email, password }) => {
   }
 };
 
-export const signup = async () => {
+export const signup = async ({name, lastname, email, password}) => {
   try{
-    const response = await axios.post(`${API_URL}/auth/signup`);
+    const response = await axios.post(`${API_URL}/auth/signup`, { name, lastname, email, password });
     return response.data;
   }catch(error){
     console.error('Error fetching reviews:', error);

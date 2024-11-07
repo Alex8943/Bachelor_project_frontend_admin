@@ -10,10 +10,10 @@ interface ImportMeta {
 
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}`;
 
-export const login = async () => {
+export const login = async ({ email, password }) => {
   try {
-    const response = await axios.get(`${API_URL}/auth/login`);
-    return response.data; // Return the data from the response
+    const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+    return response.data; // Assuming this is the format of the response
   } catch (error) {
     console.error('Error fetching reviews:', error);
     throw error;

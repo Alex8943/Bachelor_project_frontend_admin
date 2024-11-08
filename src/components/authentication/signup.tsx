@@ -1,17 +1,34 @@
-import React, { useState } from 'react';
-import { Box, Grid, Heading, Input, Button, Text, VStack } from '@chakra-ui/react';
+import React, { useState, useEffect } from 'react';
+import { Box, Grid, Heading, Input, Button, Text, VStack, Select } from '@chakra-ui/react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signup } from '../../service/apiclient';
+import { signup, getRoles } from '../../service/apiclient';
 
 function SignUp() {
   const [formData, setFormData] = useState({
-    name: '', // Changed to "name" to match the database
+    name: '',
     lastName: '',
+    role_fk: '',
     email: '',
     password: ''
   });
+
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const [roles, setRoles] = useState([]);
+
+  // Fetch roles on component mount
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const rolesData = await getRoles();
+        setRoles(rolesData); // Set the fetched roles to state
+      } catch (error) {
+        console.error('Error fetching roles:', error);
+      }
+    };
+
+    fetchRoles();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,12 +40,12 @@ function SignUp() {
     try {
       const response = await signup({
         name: formData.name,
-        lastname: formData.lastName, // Make sure to send "lastname" as the key
+        lastname: formData.lastName,
+        role_fk: formData.role_fk, // Include role_fk in the signup request
         email: formData.email,
         password: formData.password
       });
       setMessage('Signup successful!');
-      console.log('Signup response:', response);
 
       // Store token in local storage if provided
       localStorage.setItem('authToken', response.token);
@@ -83,6 +100,18 @@ function SignUp() {
               value={formData.password}
               onChange={handleChange}
             />
+            <Select
+              placeholder="Select role"
+              name="role_fk"
+              value={formData.role_fk}
+              onChange={handleChange}
+            >
+              {roles.map((role) => (
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                </option>
+              ))}
+            </Select>
             <Button colorScheme="blue" width="100%" type="submit">
               SIGN UP
             </Button>

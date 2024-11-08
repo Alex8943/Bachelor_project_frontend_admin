@@ -5,6 +5,7 @@ import SearchBar from './searchbar';
 
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);
+  const [filteredReviews, setFilteredReviews] = useState([]); // State for filtered results
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -23,6 +24,11 @@ const Dashboard = () => {
     fetchReviews();
   }, []);
 
+  // Function to handle search results from SearchBar
+  const handleSearchResults = (results) => {
+    setFilteredReviews(results); // Update filtered reviews with search results
+  };
+
   return (
     <Box
       display="flex"
@@ -31,17 +37,20 @@ const Dashboard = () => {
       minHeight="100vh"
       p={4}
     >
-      
       <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}> {/* Inner Box with centered alignment */}
         <Heading as="h1" size="lg" mb={4} color="blue.600" textAlign="center">
+          Manage reviews
         </Heading>
-        <SearchBar />
+        
+        {/* Pass handleSearchResults as a prop to SearchBar */}
+        <SearchBar onSearchResults={handleSearchResults} />
+        
         {loading ? (
           <Spinner size="xl" color="blue.500" />
         ) : error ? (
           <Text color="red.500" textAlign="center">{error}</Text>
         ) : (
-          <TableContainer>
+          <TableContainer mt={4}>
             <Table variant="striped" colorScheme="blue">
               <Thead>
                 <Tr>
@@ -53,7 +62,7 @@ const Dashboard = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {reviews.map((review) => (
+                {(filteredReviews.length > 0 ? filteredReviews : reviews).map((review) => (
                   <Tr key={review.id}>
                     <Td>{review.id}</Td>
                     <Td>{review.title}</Td>

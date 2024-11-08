@@ -59,6 +59,15 @@ export const getRoles = async () => {
     throw error;
   }
 };
+
+export const searchReviews = async (value: any) => {
+  try {
+    console.log("Searching for reviews with title:", value);
+    const response = await axios.get(`${API_URL}/review/${value}`); 
+    console.log("Search results:: ", response.data);
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
  
-
-

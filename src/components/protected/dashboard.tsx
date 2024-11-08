@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Heading, Spinner, Text } from '@chakra-ui/react';
 import { getReviews } from '../../service/apiclient';
+import SearchBar from './searchbar';
 
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);
@@ -30,10 +31,11 @@ const Dashboard = () => {
       minHeight="100vh"
       p={4}
     >
+      
       <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}> {/* Inner Box with centered alignment */}
         <Heading as="h1" size="lg" mb={4} color="blue.600" textAlign="center">
         </Heading>
-
+        <SearchBar />
         {loading ? (
           <Spinner size="xl" color="blue.500" />
         ) : error ? (

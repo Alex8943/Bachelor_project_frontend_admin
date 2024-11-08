@@ -10,14 +10,14 @@ import { Search2Icon } from "@chakra-ui/icons";
 import { searchReviews } from "../../service/apiclient";
 
 const SearchBar = ({ onSearchResults }) => {
-  const [searchInput, setSearchInput] = useState([]);
+  const [searchInput, setSearchInput] = useState('');
 
   const handleSearch = async () => {
     if (!searchInput) return; // Prevent search if input is empty
     try {
       const result = await searchReviews(searchInput); // Call the API with the search input
       onSearchResults(result); // Pass results to parent component
-      console.log("Search results: ", result);
+      
     } catch (error) {
       console.error("Error searching for reviews:", error);
     }

@@ -26,6 +26,7 @@ const Dashboard = () => {
 
   // Function to handle search results from SearchBar
   const handleSearchResults = (results) => {
+    console.log("Filtered reviews received:", results); // Debugging log
     setFilteredReviews(results); // Update filtered reviews with search results
   };
 
@@ -67,7 +68,7 @@ const Dashboard = () => {
                     <Td>{review.id}</Td>
                     <Td>{review.title}</Td>
                     <Td>{review.description}</Td>
-                    <Td>{review.User.name}</Td>
+                    <Td>{review.user_fk}</Td> {/* Adjusted based on the available data */}
                     <Td>{new Date(review.createdAt).toLocaleDateString()}</Td>
                   </Tr>
                 ))}

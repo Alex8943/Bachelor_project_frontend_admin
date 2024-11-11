@@ -17,11 +17,17 @@ const FrontPage = () => {
     e.preventDefault();
     try {
       const response = await login({ email: formData.email, password: formData.password });
-      setMessage('Login successful!');
-      localStorage.setItem('authToken', response.token);
 
-      // Redirect to /dashboard
-      navigate('/dashboard');
+      // Check the user's role
+      if (response.user.role_fk === 3) { // Assuming role_fk 3 is restricted
+        setMessage("Customers can't login here");
+      } else {
+        setMessage('Login successful!');
+        localStorage.setItem('authToken', response.authToken);
+
+        // Redirect to /dashboard
+        navigate('/dashboard');
+      }
     } catch (error) {
       setMessage('Login failed. Please check your credentials.');
       console.error('Login error:', error);

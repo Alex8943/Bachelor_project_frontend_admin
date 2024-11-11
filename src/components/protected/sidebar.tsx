@@ -47,9 +47,9 @@ const Sidebar = () => {
                 <Text>Manage users</Text>
               </Link>
 
-              <Link href="/tutorial" display="flex" alignItems="center">
+              <Link href="/statistics" display="flex" alignItems="center">
                 <Icon as={FiSettings} boxSize={5} mr={2} />
-                <Text>Tutorial</Text>
+                <Text>statistics</Text>
               </Link>
             </VStack>
           </Box>

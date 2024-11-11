@@ -92,6 +92,16 @@ export const updateReview = async (value: any) => {
   }
 };
 
+export const getAllReviewsByUser = async (id: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/user/${id}/reviews`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+}
+
 /*
 export const deleteReview = async (id: number) => {
   try {

@@ -6,7 +6,9 @@ import FrontPage from './components/authentication/frontpage';
 import SignUp from './components/authentication/signup';
 import Dashboard from './components/protected/dashboard';
 import UserDetails from './components/protected/userDetails';
+import ReviewDetails from './components/protected/reviewDetails';
 import ProtectedRoute from './components/isProtected';
+
 
 function App() {
   return (
@@ -26,15 +28,14 @@ function App() {
             <Routes>
               <Route path="/" element={<FrontPage />} /> {/* Home route for login */}
               <Route path="/signup" element={<SignUp />} /> {/* Signup route */}
-              <Route
-                path="/dashboard"
-                element={
+              <Route path="/dashboard" element={
                   <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
                 }
-              /> {/* Protected Dashboard route */}
-              <Route path="/user/:id" element={<UserDetails />} /> {/* User details route */}
+              /> 
+              <Route path="/user/:id" element={<UserDetails />} />
+              <Route path="/review/:id" element={<ReviewDetails />} />
             </Routes>
           </GridItem>
         </Grid>

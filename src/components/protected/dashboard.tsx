@@ -81,7 +81,11 @@ const Dashboard = () => {
                   {(filteredReviews.length > 0 ? filteredReviews : reviews).map((review) => (
                     <Tr key={review.id}>
                       <Td>{review.id}</Td>
-                      <Td>{review.title}</Td>
+                      <Td>
+                        <Link to={`/review/${review.id}`} style={{ color: 'black', textDecoration: 'underline' }}>
+                          {review.title}
+                        </Link>
+                      </Td>
                       <Td>{review.description}</Td>
                       <Td>
                         <Link to={`/user/${users[review.user_fk] ? users[review.user_fk].id : 'Loading...'}`} style={{ color: 'black', textDecoration: 'underline' }}>

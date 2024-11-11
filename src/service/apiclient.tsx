@@ -30,15 +30,16 @@ export const signup = async ({name, lastname, email, password}) => {
   }
 };
 
-export const getUserName = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/user`);
+export const getOneUser = async ({id}) => {
+  try{ 
+
+    const response = await axios.get(`${API_URL}/user/${id}`);
     return response.data;
-  } catch (error) {
-    console.error('Error fetching user:', error);
+  }catch(error){
+    console.log("error fetching one user: ", error);
     throw error;
   }
-};
+}
 
 export const getReviews = async () => {
   try {
@@ -71,4 +72,34 @@ export const searchReviews = async (value: string) => {
     throw error;
   }
 };
+
+export const getOneReview = async (id: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/getReview/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching review:', error);
+    throw error;
+  }
+}
+
+export const updateReview = async (value: any) => {
+  try {
+    await axios.put(`${API_URL}/review/${value.title}`);
+  } catch (error) {
+    console.error('Error updating review:', error);
+    throw error;
+  }
+};
+
+/*
+export const deleteReview = async (id: number) => {
+  try {
+    await axios.delete(`${API_URL}/update/review/${id}`);
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    throw error;
+  }
+};
+*/
  

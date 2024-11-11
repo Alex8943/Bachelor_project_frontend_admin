@@ -1,10 +1,16 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Grid, GridItem, Flex } from '@chakra-ui/react';
 import NavBar from './components/navbar';
 import FrontPage from './components/authentication/frontpage';
+import SignUp from './components/authentication/signup';
+import Dashboard from './components/protected/dashboard';
+import UserDetails from './components/protected/userDetails';
+import ProtectedRoute from './components/isProtected';
 
 function App() {
   return (
+    <Router>
       <Flex direction="column" minHeight="100vh">
         <Grid
           templateAreas={{
@@ -17,10 +23,23 @@ function App() {
           </GridItem>
 
           <GridItem gridArea="main">
-            <FrontPage />
+            <Routes>
+              <Route path="/" element={<FrontPage />} /> {/* Home route for login */}
+              <Route path="/signup" element={<SignUp />} /> {/* Signup route */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              /> {/* Protected Dashboard route */}
+              <Route path="/user/:id" element={<UserDetails />} /> {/* User details route */}
+            </Routes>
           </GridItem>
         </Grid>
       </Flex>
+    </Router>
   );
 }
 

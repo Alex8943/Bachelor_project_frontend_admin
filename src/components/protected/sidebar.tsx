@@ -39,12 +39,12 @@ const Sidebar = () => {
 
               <Link href="/dashboard" display="flex" alignItems="center">
                 <Icon as={FiHome} boxSize={5} mr={2} />
-                <Text>Dashboard</Text>
+                <Text>Manage reviews</Text>
               </Link>
 
               <Link href="/users" display="flex" alignItems="center">
                 <Icon as={FiUser} boxSize={5} mr={2} />
-                <Text>Manage Users</Text>
+                <Text>Manage users</Text>
               </Link>
 
               <Link href="/tutorial" display="flex" alignItems="center">

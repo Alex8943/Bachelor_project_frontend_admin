@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Input,
@@ -11,24 +11,37 @@ import { searchReviews } from "../../service/apiclient";
 
 const SearchBar = ({ onSearchResults }) => {
   const [searchInput, setSearchInput] = useState('');
+  const [debouncedInput, setDebouncedInput] = useState(''); // For debounce
 
-  const handleSearch = async () => {
-    if (!searchInput) return; // Prevent search if input is empty
-    try {
-      const result = await searchReviews(searchInput); // Call the API with the search input
-      onSearchResults(result); // Pass results to parent component
-      
-    } catch (error) {
-      console.error("Error searching for reviews:", error);
-    }
-  };
+  // Debounce effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedInput(searchInput);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timer); // Clear timeout if input changes
+  }, [searchInput]);
+
+  useEffect(() => {
+    const handleSearch = async () => {
+      if (!debouncedInput) return; // Prevent search if input is empty
+      try {
+        const result = await searchReviews(debouncedInput); // Call the API with the debounced input
+        onSearchResults(result); // Pass results to parent component
+      } catch (error) {
+        console.error("Error searching for reviews:", error);
+      }
+    };
+
+    handleSearch();
+  }, [debouncedInput]); // Trigger search when debouncedInput changes
 
   return (
     <InputGroup
       size="lg"
       borderRadius="full"
       width="100%"
-      maxWidth="800px"
+      maxWidth="1400px"
     >
       <InputLeftElement pointerEvents="none">
         <Search2Icon color="blue.600" />
@@ -52,7 +65,7 @@ const SearchBar = ({ onSearchResults }) => {
           borderTopLeftRadius={0}
           borderBottomLeftRadius={0}
           px={6}
-          onClick={handleSearch} // Trigger search on click
+          onClick={() => setDebouncedInput(searchInput)} // Optional search button
         >
           Search
         </Button>

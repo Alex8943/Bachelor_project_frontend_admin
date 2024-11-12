@@ -1,9 +1,20 @@
 import React from 'react';
 import { Box, VStack, Heading, Text, Link, Icon, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure } from "@chakra-ui/react";
 import { FiHome, FiUser, FiSettings, FiMenu } from "react-icons/fi";
+import { useEffect } from 'react';
+import { navigate } from '@reach/router';
 
 const Sidebar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  useEffect(() => {
+        
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn'); 
+    
+    if (!isLoggedIn) {
+        navigate('/'); 
+    }
+  }, [navigate]);
 
   return (
     <>
@@ -13,12 +24,12 @@ const Sidebar = () => {
         icon={<FiMenu />}
         size="lg"
         position="fixed"
-        top={100}
-        left={4}
+        top={5}
+        right={100}
         zIndex={10}
         onClick={onOpen}
-        bg="gray.100"
         color="black"
+        bg="blue.400"
         _hover={{ bg: "blue.500" }}
       />
 

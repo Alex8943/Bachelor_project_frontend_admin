@@ -3,7 +3,7 @@ import { Box, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Heading, Spinner,
 import { getReviews, getOneUser } from '../../service/apiclient';
 import { Link } from 'react-router-dom';
 import SearchBar from './searchbar';
-import Sidebar from './sidebar';
+
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -63,7 +63,6 @@ const Dashboard = () => {
 
   return (
     <Flex minHeight="100vh" direction="column">
-      <Sidebar />
 
       <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" p={4}>
         <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}>

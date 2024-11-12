@@ -3,11 +3,22 @@ import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import React from "react";
 import logo from "../assets/logo.webp";
+import Sidebar from './protected/sidebar';
 
 const Navbar = () => {
   return (
-    <HStack p={4} bg="blue.400" color="white" justifyContent="center">
+    <HStack
+      p={4}
+      bg="blue.400"
+      color="white"
+      justifyContent="center"
+      position="fixed"   // Keep the Navbar fixed at the top
+      width="100%"
+      top="0"
+      zIndex={10}
+    >
       <Image src={logo} alt="Sheridan College Logo" boxSize="50px" />
+      <Sidebar />
       <Spacer />
       <Text fontSize="2xl" textAlign="center">
         Admin Dashboard

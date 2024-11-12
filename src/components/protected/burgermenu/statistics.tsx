@@ -25,6 +25,10 @@ const Statistics = () => {
   }, []);
 
   useEffect(() => {
+    const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+    if (!authToken) {
+      navigate('/'); // Redirect to login page if token is missing
+    }
     const checkAccess = () => {
       const userRole = localStorage.getItem('userRole');
       if (userRole === '2') {

@@ -8,10 +8,17 @@ import {
 } from "@chakra-ui/react";
 import { Search2Icon } from "@chakra-ui/icons";
 import { searchReviews } from "../../service/apiclient";
+import { navigate } from "@reach/router";
 
 const SearchBar = ({ onSearchResults }) => {
+
   const [searchInput, setSearchInput] = useState('');
   const [debouncedInput, setDebouncedInput] = useState(''); // For debounce
+
+  const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+    if (!authToken) {
+      navigate('/'); // Redirect to login page if token is missing
+    }
 
   // Debounce effect
   useEffect(() => {

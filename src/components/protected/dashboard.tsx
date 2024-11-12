@@ -3,7 +3,6 @@ import { Box, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Heading, Spinner,
 import { getReviews, getOneUser } from '../../service/apiclient';
 import { Link } from 'react-router-dom';
 import SearchBar from './searchbar';
-
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -15,14 +14,10 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-    useEffect(() => {
-        
-        const isLoggedIn = sessionStorage.getItem('isLoggedIn'); 
-        
-        if (!isLoggedIn) {
-            navigate('/'); 
-        }
-    }, [navigate]);
+  const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+  if (!authToken) {
+    navigate('/'); // Redirect to login page if token is missing
+  }
 
   useEffect(() => {
     const fetchReviews = async () => {

@@ -7,6 +7,10 @@ const UserManagement = () => {
 
   useEffect(() => {
     const checkAccess = async () => {
+      const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+        if (!authToken) {
+          navigate('/'); // Redirect to login page if token is missing
+        }
       try {
         
         const userRole = localStorage.getItem('userRole');

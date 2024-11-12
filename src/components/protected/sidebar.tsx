@@ -4,17 +4,14 @@ import { FiHome, FiUser, FiSettings, FiMenu } from "react-icons/fi";
 import { useEffect } from 'react';
 import { navigate } from '@reach/router';
 
+
 const Sidebar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(() => {
-        
-    const isLoggedIn = sessionStorage.getItem('isLoggedIn'); 
-    
-    if (!isLoggedIn) {
-        navigate('/'); 
+  const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+    if (!authToken) {
+      navigate('/'); // Redirect to login page if token is missing
     }
-  }, [navigate]);
 
   return (
     <>

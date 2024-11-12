@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, Heading, Text, Spinner, Alert, AlertIcon, VStack, Flex } from '@chakra-ui/react';
 import { getOneUser, getAllReviewsByUser } from '../../service/apiclient';
 import Sidebar from './sidebar';
+import { navigate } from '@reach/router';
 
 const UserDetails = () => {
   const { id } = useParams(); // Get user ID from URL
@@ -13,7 +14,14 @@ const UserDetails = () => {
   const [error, setError] = useState(null);
   const [errorReviews, setErrorReviews] = useState(null);
 
+
   useEffect(() => {
+
+    const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+    if (!authToken) {
+      navigate('/'); // Redirect to login page if token is missing
+    }
+
     const fetchUser = async () => {
       try {
         const userData = await getOneUser({ id });

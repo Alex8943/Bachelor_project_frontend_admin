@@ -21,24 +21,27 @@ const FrontPage = () => {
       const response = await login({ email: formData.email, password: formData.password });
       setAuthToken(response.authToken);
       setUserRole(response.user.role_fk);
-
-      // Store the token and user role in localStorage
-      localStorage.setItem('authToken', response.authToken);
-      localStorage.setItem('userRole', response.user.role_fk);
-
-      // Check if user role is restricted
+  
+      // Store session details
+      sessionStorage.setItem('authToken', response.authToken);
+      sessionStorage.setItem('userRole', response.user.role_fk);
+  
       if (response.user.role_fk === 3) {
         setMessage("Customers can't login here");
         return;
       }
-
+  
       setMessage('Login successful!');
+      console.log('Auth Token:', sessionStorage.getItem('authToken'));
+      console.log('User Role:', sessionStorage.getItem('userRole'));
+      
       navigate('/dashboard');
     } catch (error) {
       setMessage('Login failed. Please check your credentials.');
       console.error('Login error:', error);
     }
   };
+  
 
   return (
     <Grid
@@ -71,7 +74,7 @@ const FrontPage = () => {
             />
             <Checkbox>Remember password</Checkbox>
             <Button colorScheme="blue" width="100%" type="submit">
-              SIGN IN
+              LOGIN
             </Button>
             {message && (
               <Text textAlign="center" color={message.includes('successful') ? 'green.500' : 'red.500'}>

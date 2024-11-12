@@ -3,12 +3,18 @@ import { useParams } from 'react-router-dom';
 import { Box, Heading, Text, Spinner, Alert, AlertIcon, VStack } from '@chakra-ui/react';
 import { getOneReview } from '../../service/apiclient';
 import Sidebar from './sidebar';
+import { navigate } from '@reach/router';
 
 const ReviewDetails = () => {
   const { id } = useParams(); // Get review ID from URL
   const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+    if (!authToken) {
+      navigate('/'); // Redirect to login page if token is missing
+    }
 
   useEffect(() => {
     const fetchReview = async () => {

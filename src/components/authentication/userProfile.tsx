@@ -4,14 +4,10 @@ import { useNavigate } from 'react-router-dom';
 const UserProfile = () => {
     const navigate = useNavigate();
 
-    useEffect(() => {
-        
-        const isLoggedIn = sessionStorage.getItem('isLoggedIn'); 
-        
-        if (!isLoggedIn) {
-            navigate('/'); 
-        }
-    }, [navigate]);
+    const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+    if (!authToken) {
+      navigate('/'); // Redirect to login page if token is missing
+    }
 
   
 
@@ -21,6 +17,7 @@ const UserProfile = () => {
             <div>
                 
                 <p>Access granted</p>
+                
             </div>
         </div>
     );

@@ -4,6 +4,7 @@ import { getReviews, getOneUser } from '../../service/apiclient';
 import { Link } from 'react-router-dom';
 import SearchBar from './searchbar';
 import Sidebar from './sidebar';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);
@@ -11,6 +12,17 @@ const Dashboard = () => {
   const [users, setUsers] = useState({}); // State to store user details by ID
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+
+    useEffect(() => {
+        
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn'); 
+        
+        if (!isLoggedIn) {
+            navigate('/'); 
+        }
+    }, [navigate]);
 
   useEffect(() => {
     const fetchReviews = async () => {

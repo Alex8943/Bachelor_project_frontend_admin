@@ -12,14 +12,13 @@ const Statistics = () => {
         const userRole = localStorage.getItem('userRole');
         
         if (userRole === '2') {
-          setMessage("Access denied: Admins can't access this page");
           console.log("Admins can't access this page");
           navigate('/dashboard'); // Redirect to another page
         } else if (userRole === '1') {
           setMessage('Access granted to Statistics!');
           
         } else {
-          setMessage('Access denied: Unrecognized role');
+    
           console.log("Unrecognized role:", userRole);
           navigate('/dashboard');
         }

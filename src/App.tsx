@@ -8,9 +8,12 @@ import Dashboard from './components/protected/dashboard';
 import UserDetails from './components/protected/userDetails';
 import ReviewDetails from './components/protected/reviewDetails';
 import ProtectedRoute from './components/isProtected';
+import UserManagement from './components/protected/burgermenu/userManagement';
+import Statistics from './components/protected/burgermenu/statistics';
 
 
 function App() {
+  
   return (
     <Router>
       <Flex direction="column" minHeight="100vh">
@@ -36,6 +39,8 @@ function App() {
               /> 
               <Route path="/user/:id" element={<UserDetails />} />
               <Route path="/review/:id" element={<ReviewDetails />} />
+              <Route path="/users" element={<UserManagement />} />
+              <Route path="/statistics" element={<Statistics />} />
             </Routes>
           </GridItem>
         </Grid>

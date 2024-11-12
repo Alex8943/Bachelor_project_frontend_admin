@@ -6,7 +6,9 @@ import { login } from '../../service/apiclient';
 const FrontPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
-  const navigate = useNavigate(); // Use navigate for redirection
+  const [authToken, setAuthToken] = useState(null); 
+  const [userRole, setUserRole] = useState(null); 
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,17 +19,21 @@ const FrontPage = () => {
     e.preventDefault();
     try {
       const response = await login({ email: formData.email, password: formData.password });
+      setAuthToken(response.authToken);
+      setUserRole(response.user.role_fk);
 
-      // Check the user's role
-      if (response.user.role_fk === 3) { // Assuming role_fk 3 is restricted
+      // Store the token and user role in localStorage
+      localStorage.setItem('authToken', response.authToken);
+      localStorage.setItem('userRole', response.user.role_fk);
+
+      // Check if user role is restricted
+      if (response.user.role_fk === 3) {
         setMessage("Customers can't login here");
-      } else {
-        setMessage('Login successful!');
-        localStorage.setItem('authToken', response.authToken);
-
-        // Redirect to /dashboard
-        navigate('/dashboard');
+        return;
       }
+
+      setMessage('Login successful!');
+      navigate('/dashboard');
     } catch (error) {
       setMessage('Login failed. Please check your credentials.');
       console.error('Login error:', error);

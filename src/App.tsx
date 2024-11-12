@@ -10,6 +10,7 @@ import ReviewDetails from './components/protected/reviewDetails';
 import ProtectedRoute from './components/isProtected';
 import UserManagement from './components/protected/burgermenu/userManagement';
 import Statistics from './components/protected/burgermenu/statistics';
+import UserProfile from './components/authentication/userProfile';
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
               <Route path="/review/:id" element={<ReviewDetails />} />
               <Route path="/users" element={<UserManagement />} />
               <Route path="/statistics" element={<Statistics />} />
+              <Route path="/profile" element={<UserProfile />} />
             </Routes>
           </GridItem>
         </Grid>

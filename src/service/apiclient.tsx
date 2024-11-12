@@ -112,4 +112,15 @@ export const deleteReview = async (id: number) => {
   }
 };
 */
+
+
+export const topGenres = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/genres/top`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching genres:', error);
+    throw error;
+  }
+};
  

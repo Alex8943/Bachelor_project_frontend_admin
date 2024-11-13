@@ -1,65 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Heading, Text, VStack, HStack, Flex } from '@chakra-ui/react';
-
-
+import { Box, Button, Heading, Text, VStack, Flex } from '@chakra-ui/react';
 
 const UserProfile = () => {
     const navigate = useNavigate();
-    const [userInfo, setUserInfo] = useState(null);
+    const [userName, setUserName] = useState('');
+    const [userEmail, setUserEmail] = useState('');
+    const [userRoleName, setUserRoleName] = useState(''); // Track role name
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const authToken = sessionStorage.getItem('authToken');
-        const userRole = sessionStorage.getItem('userRole');
+        const storedName = sessionStorage.getItem('userName');
+        const storedEmail = sessionStorage.getItem('userEmail');
+        const storedRoleName = sessionStorage.getItem('userRoleName'); // Get role name from storage
 
-        // Redirect to login if no auth token
         if (!authToken) {
-            navigate('/');
-        } else {
-            // Mock user information - replace with actual user data retrieval if needed
-            setUserInfo({
-                name: 'John Doe',
-                email: 'johndoe@example.com',
-                role: userRole === '1' ? 'Super Admin' : 'User',
-            });
+            navigate('/'); // Redirect to login if no auth token
+            return;
         }
+
+        setUserName(storedName);
+        setUserEmail(storedEmail);
+        setUserRoleName(storedRoleName); // Set role name
+        setLoading(false);
     }, [navigate]);
 
     const handleSignOut = () => {
-        sessionStorage.clear(); // Clear session storage (or localStorage if used)
+        sessionStorage.clear(); // Clear session storage
         navigate('/'); // Redirect to login page
     };
 
+    if (loading) {
+        return (
+            <Flex minHeight="100vh" justifyContent="center" alignItems="center">
+                <Text>Loading...</Text>
+            </Flex>
+        );
+    }
+
     return (
-            <Flex minHeight="100vh" p={4} justifyContent="center" alignItems="center" gap={12}>
-                {/* User Details Box */}
-                <Box width="100%" maxW="500px" p={8} boxShadow="md" borderRadius="md" bg="white" marginRight="280px">
+        <Flex minHeight="100vh" p={4} justifyContent="center" alignItems="center" gap={12}>
+            <Box width="100%" maxW="500px" p={8} boxShadow="md" borderRadius="md" bg="white">
                 <Heading as="h1" size="lg" mb={6} color="blue.600" textAlign="center">
+                    User Profile
                 </Heading>
-              
-                    <Heading as="h1" size="lg" mb={6} color="blue.600">
-                        User Profile
-                    </Heading>
-                    {userInfo && (
-                        <VStack spacing={4} align="stretch">
-                            <Text fontSize="lg">
-                                <strong>Name:</strong> {userInfo.name}
-                            </Text>
-                            <Text fontSize="lg">
-                                <strong>Email:</strong> {userInfo.email}
-                            </Text>
-                            <Text fontSize="lg">
-                                <strong>Role:</strong> {userInfo.role}
-                            </Text>
-                            <Button colorScheme="blue" onClick={handleSignOut}>
-                                Sign Out
-                            </Button>
-                        </VStack>
-                    )}
-                </Box>
-       
-    </Flex>
+                <VStack spacing={4} align="stretch">
+                    <Text fontSize="lg">
+                        <strong>Name:</strong> {userName}
+                    </Text>
+                    <Text fontSize="lg">
+                        <strong>Email:</strong> {userEmail}
+                    </Text>
+                    <Text fontSize="lg">
+                        <strong>Role:</strong> {userRoleName || "Unknown"}
+                    </Text>
+                    <Button colorScheme="blue" onClick={handleSignOut}>
+                        Sign Out
+                    </Button>
+                </VStack>
+            </Box>
+        </Flex>
     );
-}    
+};
 
 export default UserProfile;

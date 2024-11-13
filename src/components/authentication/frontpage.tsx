@@ -6,8 +6,7 @@ import { login } from '../../service/apiclient';
 const FrontPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
-  const [authToken, setAuthToken] = useState(null); 
-  const [userRole, setUserRole] = useState(null); 
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,29 +17,32 @@ const FrontPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await login({ email: formData.email, password: formData.password });
-      setAuthToken(response.authToken);
-      setUserRole(response.user.role_fk);
-  
-      // Store session details
-      sessionStorage.setItem('authToken', response.authToken);
-      sessionStorage.setItem('userRole', response.user.role_fk);
-  
-      if (response.user.role_fk === 3) {
-        setMessage("Customers can't login here");
-        return;
-      }
-  
-      setMessage('Login successful!');
-      console.log('Auth Token:', sessionStorage.getItem('authToken'));
-      console.log('User Role:', sessionStorage.getItem('userRole'));
-      
-      navigate('/dashboard');
+        const response = await login({ email: formData.email, password: formData.password });
+
+        // Log the response to verify the structure
+        console.log('Login Response:', response);
+
+        // Store session details directly, no need to set in component state
+        sessionStorage.setItem('authToken', response.authToken);
+        sessionStorage.setItem('userRoleName', response.user.Role.name); 
+        sessionStorage.setItem('userName', response.user.name);
+        sessionStorage.setItem('userEmail', response.user.email);
+
+        console.log('User Role Name:', response.user.Role.name);
+
+        if (response.user.role_fk === 3) {
+            setMessage("Customers can't login here");
+            return;
+        }
+
+        setMessage('Login successful!');
+        navigate('/dashboard');
     } catch (error) {
-      setMessage('Login failed. Please check your credentials.');
-      console.error('Login error:', error);
+        setMessage('Login failed. Please check your credentials.');
+        console.error('Login error:', error);
     }
-  };
+};
+
   
 
   return (

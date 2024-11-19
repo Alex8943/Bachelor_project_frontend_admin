@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Table, Thead, Tbody, Tr, Th, Td, TableContainer, Heading, Spinner, Text, Flex } from '@chakra-ui/react';
-import { getReviews, getOneUser } from '../../service/apiclient';
+import {
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Heading,
+  Spinner,
+  Text,
+  Flex,
+  Select,
+} from '@chakra-ui/react';
+import { getReviews, getRangeOfReviews, getOneUser } from '../../service/apiclient';
 import { Link } from 'react-router-dom';
 import SearchBar from './searchbar';
 import { useNavigate } from 'react-router-dom';
@@ -8,45 +22,46 @@ import { useNavigate } from 'react-router-dom';
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);
   const [filteredReviews, setFilteredReviews] = useState([]);
-  const [users, setUsers] = useState({}); // State to store user details by ID
+  const [users, setUsers] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [range, setRange] = useState(10); // Default range value
 
   const navigate = useNavigate();
 
-  const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+  const authToken = sessionStorage.getItem('authToken');
   if (!authToken) {
     navigate('/'); // Redirect to login page if token is missing
   }
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const data = await getReviews();
-        setReviews(data);
-        setLoading(false);
-      } catch (error) {
-        setError('Failed to load reviews');
-        setLoading(false);
-      }
-    };
+  const fetchReviews = async (range) => {
+    try {
+      const data = range ? await getRangeOfReviews(range) : await getReviews();
+      setReviews(data);
+      setFilteredReviews([]); // Reset filtered reviews when range changes
+      setLoading(false);
+    } catch (error) {
+      setError('Failed to load reviews');
+      setLoading(false);
+    }
+  };
 
-    fetchReviews();
-  }, []);
+  useEffect(() => {
+    fetchReviews(range);
+  }, [range]);
 
   const fetchUserDetails = async (userId) => {
-    if (!users[userId]) { // Only fetch if user data isn't already available
+    if (!users[userId]) {
       try {
         const user = await getOneUser({ id: userId });
         setUsers((prevUsers) => ({ ...prevUsers, [userId]: user }));
       } catch (error) {
-        console.log("Failed to load user details:", error);
+        console.log('Failed to load user details:', error);
       }
     }
   };
 
   useEffect(() => {
-    // Fetch user details for each user_fk in the reviews
     (filteredReviews.length > 0 ? filteredReviews : reviews).forEach((review) => {
       fetchUserDetails(review.user_fk);
     });
@@ -56,20 +71,39 @@ const Dashboard = () => {
     setFilteredReviews(results);
   };
 
+  const handleRangeChange = (event) => {
+    setRange(parseInt(event.target.value, 10));
+  };
+
   const truncateText = (text, length = 50) => {
     return text.length > length ? `${text.slice(0, length)}...` : text;
   };
 
   return (
     <Flex minHeight="100vh" direction="column">
-
       <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" p={4}>
         <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}>
           <Heading as="h1" size="lg" mb={4} color="blue.600" textAlign="center">
             Manage reviews
           </Heading>
-          
-          <SearchBar onSearchResults={handleSearchResults} />
+
+          {/* Search Bar and Dropdown */}
+          <Flex justifyContent="space-between" alignItems="center" mb={4}>
+            <SearchBar onSearchResults={handleSearchResults} />
+            <Select
+              width="200px"
+              onChange={handleRangeChange}
+              value={range}
+              placeholder="Select range"
+              color="blue.700"
+              borderColor="blue.400"
+            >
+              <option value={5}>5 Reviews</option>
+              <option value={10}>10 Reviews</option>
+              <option value={20}>20 Reviews</option>
+              <option value={50}>50 Reviews</option>
+            </Select>
+          </Flex>
 
           {loading ? (
             <Spinner size="xl" color="blue.500" />
@@ -92,7 +126,10 @@ const Dashboard = () => {
                     <Tr key={review.id}>
                       <Td>{review.id}</Td>
                       <Td>
-                        <Link to={`/review/${review.id}`} style={{ color: 'black', textDecoration: 'underline' }}>
+                        <Link
+                          to={`/review/${review.id}`}
+                          style={{ color: 'black', textDecoration: 'underline' }}
+                        >
                           {review.title}
                         </Link>
                       </Td>
@@ -100,15 +137,17 @@ const Dashboard = () => {
                         {truncateText(review.description, 50)}
                       </Td>
                       <Td>
-                        <Link to={`/user/${users[review.user_fk] ? users[review.user_fk].id : 'Loading...'}`} style={{ color: 'black', textDecoration: 'underline' }}>
-                          {users[review.user_fk] ? users[review.user_fk].name : "Loading..."}
+                        <Link
+                          to={`/user/${users[review.user_fk] ? users[review.user_fk].id : 'Loading...'}`}
+                          style={{ color: 'black', textDecoration: 'underline' }}
+                        >
+                          {users[review.user_fk] ? users[review.user_fk].name : 'Loading...'}
                         </Link>
                       </Td>
                       <Td>{new Date(review.createdAt).toLocaleDateString()}</Td>
                     </Tr>
                   ))}
                 </Tbody>
-
               </Table>
             </TableContainer>
           )}

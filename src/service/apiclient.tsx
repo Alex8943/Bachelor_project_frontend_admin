@@ -123,4 +123,14 @@ export const topGenres = async () => {
     throw error;
   }
 };
+
+export const getRangeOfReviews = async (max: any) => {
+  try{
+    const response = await axios.get(`${API_URL}/reviews/${max}`);
+    return response.data;
+  }catch(error){
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+}
  

@@ -56,6 +56,10 @@ const Dashboard = () => {
     setFilteredReviews(results);
   };
 
+  const truncateText = (text, length = 50) => {
+    return text.length > length ? `${text.slice(0, length)}...` : text;
+  };
+
   return (
     <Flex minHeight="100vh" direction="column">
 
@@ -92,7 +96,9 @@ const Dashboard = () => {
                           {review.title}
                         </Link>
                       </Td>
-                      <Td>{review.description}</Td>
+                      <Td style={{ color: 'rgba(0, 0, 0, 0.6)', whiteSpace: 'nowrap' }}>
+                        {truncateText(review.description, 50)}
+                      </Td>
                       <Td>
                         <Link to={`/user/${users[review.user_fk] ? users[review.user_fk].id : 'Loading...'}`} style={{ color: 'black', textDecoration: 'underline' }}>
                           {users[review.user_fk] ? users[review.user_fk].name : "Loading..."}

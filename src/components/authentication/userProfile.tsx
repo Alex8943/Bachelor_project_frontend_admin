@@ -14,6 +14,7 @@ const UserProfile = () => {
         const storedName = sessionStorage.getItem('userName');
         const storedEmail = sessionStorage.getItem('userEmail');
         const storedRoleName = sessionStorage.getItem('userRoleName'); // Get role name from storage
+        
 
         if (!authToken) {
             navigate('/'); // Redirect to login if no auth token

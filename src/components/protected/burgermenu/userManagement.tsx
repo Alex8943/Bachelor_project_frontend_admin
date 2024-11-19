@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const UserManagement = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const [userRoleName, setUserRoleName] = useState(''); // Track role name
 
   useEffect(() => {
     const checkAccess = async () => {
@@ -14,13 +15,15 @@ const UserManagement = () => {
       try {
         
         const userRole = localStorage.getItem('userRole');
+        const storedRoleName = sessionStorage.getItem('userRoleName');
         
-        if (userRole === '2') {
+        if (userRole === "2" || storedRoleName === "admin") {
           setMessage("Access denied: Admins can't access this page");
           console.log("Admins can't access this page");
           navigate('/dashboard'); // Redirect to another page
-        } else if (userRole === '1') {
+        } else if (userRole === "1") {
           setMessage('Access granted to User management!');
+          console.log("Access granted: ", storedRoleName);
           
         } else {
           setMessage('Access denied: Unrecognized role');

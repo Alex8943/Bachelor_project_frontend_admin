@@ -12,7 +12,7 @@ const Navbar = () => {
       bg="blue.400"
       color="white"
       justifyContent="center"
-      position="fixed"   // Keep the Navbar fixed at the top
+      position="fixed"   
       width="100%"
       top="0"
       zIndex={10}

@@ -9,6 +9,7 @@ const Statistics = () => {
   const navigate = useNavigate();
   const [topGenres, setTopGenres] = useState([]); // State for storing genres
   const [error, setError] = useState(null);
+  const [userRoleName, setUserRoleName] = useState(''); // Track role name
 
   useEffect(() => {
     const fetchTopGenres = async () => {
@@ -26,16 +27,19 @@ const Statistics = () => {
 
   useEffect(() => {
     const authToken = sessionStorage.getItem('authToken');
-    if (!authToken) {
+    const userRole = localStorage.getItem('userRole');
+    const storedRoleName = sessionStorage.getItem('userRoleName'); // Get role name from storage
+
+    if (!authToken || !userRole) {
       navigate('/'); // Redirect to login page if token is missing
     } else {
-      const userRole = localStorage.getItem('userRole');
-      if (userRole === '2') {
+      if (userRole === "2" || storedRoleName === "admin") {
         console.log("Admins can't access this page");
         navigate('/dashboard'); // Redirect to another page
       } else if (userRole === '1') {
         setMessage('Access granted to Statistics!');
         console.log("Access granted for statistics");
+        console.log("User role name:", storedRoleName);
       } else {
         console.log("Unrecognized role:", userRole);
         navigate('/dashboard');

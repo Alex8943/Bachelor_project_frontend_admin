@@ -80,12 +80,10 @@ const Dashboard = () => {
   };
 
   return (
-    <Flex minHeight="100vh" direction="column">
+    <Flex minHeight="100vh" direction="column" mt={90}>
       <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" p={4}>
         <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}>
-          <Heading as="h1" size="lg" mb={4} color="blue.600" textAlign="center">
-            Manage reviews
-          </Heading>
+         
 
           {/* Search Bar and Dropdown */}
           <Flex justifyContent="space-between" alignItems="center" mb={4}>

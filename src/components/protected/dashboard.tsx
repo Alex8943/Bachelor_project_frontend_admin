@@ -12,9 +12,10 @@ import {
   Spinner,
   Text,
   Flex,
+  Button,
   Select,
 } from '@chakra-ui/react';
-import { getReviews, getRangeOfReviews, getOneUser } from '../../service/apiclient';
+import { getRangeOfReviews, getOneUser } from '../../service/apiclient';
 import { Link } from 'react-router-dom';
 import SearchBar from './searchbar';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +26,9 @@ const Dashboard = () => {
   const [users, setUsers] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [range, setRange] = useState(10); // Default range value
+  const [currentPage, setCurrentPage] = useState(1); // Track the current page
+  const reviewsPerPage = 25; // Max reviews per page
+  const [range, setRange] = useState(reviewsPerPage); // Default range
 
   const navigate = useNavigate();
 
@@ -34,11 +37,13 @@ const Dashboard = () => {
     navigate('/'); // Redirect to login page if token is missing
   }
 
-  const fetchReviews = async (range) => {
+  const fetchReviews = async (page) => {
     try {
-      const data = range ? await getRangeOfReviews(range) : await getReviews();
-      setReviews(data);
-      setFilteredReviews([]); // Reset filtered reviews when range changes
+      setLoading(true);
+      const startIndex = (page - 1) * reviewsPerPage;
+      const data = await getRangeOfReviews(startIndex + reviewsPerPage); // Fetch enough to cover the page
+      setReviews(data.slice(startIndex, startIndex + reviewsPerPage)); // Slice the exact range for the page
+      setFilteredReviews([]); // Reset filtered reviews when changing pages
       setLoading(false);
     } catch (error) {
       setError('Failed to load reviews');
@@ -47,8 +52,8 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchReviews(range);
-  }, [range]);
+    fetchReviews(currentPage);
+  }, [currentPage]);
 
   const fetchUserDetails = async (userId) => {
     if (!users[userId]) {
@@ -61,6 +66,7 @@ const Dashboard = () => {
     }
   };
 
+
   useEffect(() => {
     (filteredReviews.length > 0 ? filteredReviews : reviews).forEach((review) => {
       fetchUserDetails(review.user_fk);
@@ -71,13 +77,12 @@ const Dashboard = () => {
     setFilteredReviews(results);
   };
 
-  const handleRangeChange = (event) => {
-    setRange(parseInt(event.target.value, 10));
-  };
-
   const truncateText = (text, length = 50) => {
     return text.length > length ? `${text.slice(0, length)}...` : text;
   };
+
+  const goToNextPage = () => setCurrentPage((prev) => prev + 1);
+  const goToPreviousPage = () => setCurrentPage((prev) => (prev > 1 ? prev - 1 : 1));
 
   return (
     <Flex minHeight="100vh" direction="column" mt={90}>
@@ -88,66 +93,66 @@ const Dashboard = () => {
           {/* Search Bar and Dropdown */}
           <Flex justifyContent="space-between" alignItems="center" mb={4}>
             <SearchBar onSearchResults={handleSearchResults} />
-            <Select
-              width="200px"
-              onChange={handleRangeChange}
-              value={range}
-              placeholder="Select range"
-              color="blue.700"
-              borderColor="blue.400"
-            >
-              <option value={5}>5 Reviews</option>
-              <option value={10}>10 Reviews</option>
-              <option value={20}>20 Reviews</option>
-              <option value={50}>50 Reviews</option>
-            </Select>
+           
           </Flex>
+
+
 
           {loading ? (
             <Spinner size="xl" color="blue.500" />
           ) : error ? (
             <Text color="red.500" textAlign="center">{error}</Text>
           ) : (
-            <TableContainer mt={4}>
-              <Table variant="striped" colorScheme="blue">
-                <Thead>
-                  <Tr>
-                    <Th color="blue.700">ID</Th>
-                    <Th color="blue.700">Title</Th>
-                    <Th color="blue.700">Content</Th>
-                    <Th color="blue.700">Created by</Th>
-                    <Th color="blue.700">Review created</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {(filteredReviews.length > 0 ? filteredReviews : reviews).map((review) => (
-                    <Tr key={review.id}>
-                      <Td>{review.id}</Td>
-                      <Td>
-                        <Link
-                          to={`/review/${review.id}`}
-                          style={{ color: 'black', textDecoration: 'underline' }}
-                        >
-                          {review.title}
-                        </Link>
-                      </Td>
-                      <Td style={{ color: 'rgba(0, 0, 0, 0.6)', whiteSpace: 'nowrap' }}>
-                        {truncateText(review.description, 50)}
-                      </Td>
-                      <Td>
-                        <Link
-                          to={`/user/${users[review.user_fk] ? users[review.user_fk].id : 'Loading...'}`}
-                          style={{ color: 'black', textDecoration: 'underline' }}
-                        >
-                          {users[review.user_fk] ? users[review.user_fk].name : 'Loading...'}
-                        </Link>
-                      </Td>
-                      <Td>{new Date(review.createdAt).toLocaleDateString()}</Td>
+            <>
+              <TableContainer mt={4}>
+                <Table variant="striped" colorScheme="blue">
+                  <Thead>
+                    <Tr>
+                      <Th color="blue.700">ID</Th>
+                      <Th color="blue.700">Title</Th>
+                      <Th color="blue.700">Content</Th>
+                      <Th color="blue.700">Created by</Th>
+                      <Th color="blue.700">Review created</Th>
                     </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
+                  </Thead>
+                  <Tbody>
+                    {(filteredReviews.length > 0 ? filteredReviews : reviews).map((review) => (
+                      <Tr key={review.id}>
+                        <Td>{review.id}</Td>
+                        <Td>
+                          <Link
+                            to={`/review/${review.id}`}
+                            style={{ color: 'black', textDecoration: 'underline' }}
+                          >
+                            {review.title}
+                          </Link>
+                        </Td>
+                        <Td style={{ color: 'rgba(0, 0, 0, 0.6)', whiteSpace: 'nowrap' }}>
+                          {truncateText(review.description, 50)}
+                        </Td>
+                        <Td>{users[review.user_fk]?.name || 'Unknown'}</Td>
+                        <Td>{new Date(review.createdAt).toLocaleDateString()}</Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+
+              {/* Pagination Controls */}
+              <Flex justifyContent="center" mt={4}>
+                <Button
+                  onClick={goToPreviousPage}
+                  isDisabled={currentPage === 1}
+                  colorScheme="blue"
+                  mr={4}
+                >
+                  Previous
+                </Button>
+                <Button onClick={goToNextPage} colorScheme="blue">
+                  Next
+                </Button>
+              </Flex>
+            </>
           )}
         </Box>
       </Box>

@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Heading, Text, Spinner, Alert, AlertIcon, VStack, Flex } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Text,
+  Spinner,
+  Alert,
+  AlertIcon,
+  VStack,
+  Flex,
+  Grid,
+  GridItem,
+} from '@chakra-ui/react';
 import { getOneUser, getAllReviewsByUser } from '../../service/apiclient';
 import Sidebar from './sidebar';
 import { navigate } from '@reach/router';
@@ -14,9 +25,7 @@ const UserDetails = () => {
   const [error, setError] = useState(null);
   const [errorReviews, setErrorReviews] = useState(null);
 
-
   useEffect(() => {
-
     const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
     if (!authToken) {
       navigate('/'); // Redirect to login page if token is missing
@@ -68,20 +77,20 @@ const UserDetails = () => {
   }
 
   return (
-    <Flex minHeight="100vh" p={4} justifyContent="center" alignItems="center" gap={12}>
-      {/* User Details Box */}
-      <Box width="100%" maxW="500px" p={8} boxShadow="md" borderRadius="md" bg="white">
+    <Flex direction="column" align="center" minHeight="100vh" p={4} mt={12}>
+      {/* User Details */}
+      <Box width="100%" maxW="600px" p={8} boxShadow="md" borderRadius="md" bg="white" mb={8} marginRight={200}>
         <Heading as="h1" size="lg" mb={6} color="blue.600" textAlign="center">
           User Details
         </Heading>
         <Sidebar />
         {user ? (
-          <VStack align="start" spacing={4} mb={6}>
+          <VStack align="start" spacing={4}>
             <Text><strong>ID:</strong> {user.id}</Text>
             <Text><strong>Name:</strong> {user.name}</Text>
             <Text><strong>Last Name:</strong> {user.lastname}</Text>
             <Text><strong>Email:</strong> {user.email}</Text>
-            <Text><strong>Role ID:</strong> {user.role_fk}</Text>
+            <Text><strong>Role:</strong> {user.role_fk}</Text>
             <Text><strong>Created At:</strong> {new Date(user.createdAt).toLocaleDateString()}</Text>
             <Text><strong>Verified At:</strong> {user.verifiedAt ? new Date(user.verifiedAt).toLocaleDateString() : "Not Verified"}</Text>
             <Text><strong>Is Blocked:</strong> {user.isBlocked ? "Yes" : "No"}</Text>
@@ -90,9 +99,9 @@ const UserDetails = () => {
           <Text>No user data available.</Text>
         )}
       </Box>
-
-      {/* User Reviews Box */}
-      <Box width="100%" maxW="500px" p={8} boxShadow="md" borderRadius="md" bg="white" marginRight="170px">
+  
+      {/* User Reviews */}
+      <Box width="100%" maxW="900px" p={8} boxShadow="md" borderRadius="md" bg="white" marginRight={200}>
         <Heading as="h2" size="lg" mb={6} color="blue.600" textAlign="center">
           User Reviews
         </Heading>
@@ -104,23 +113,29 @@ const UserDetails = () => {
             {errorReviews}
           </Alert>
         ) : reviews.length > 0 ? (
-          <VStack align="start" spacing={4}>
-            {reviews.map((review) => (
-              <Box key={review.id} p={4} bg="gray.50" borderRadius="md" boxShadow="sm" width="100%">
-                <Text><strong>Title:</strong> {review.title}</Text>
-                <Text><strong>Description:</strong> {review.description}</Text>
-                <Text><strong>Media ID:</strong> {review.media_fk}</Text>
-                <Text><strong>Platform ID:</strong> {review.platform_fk}</Text>
-                <Text><strong>Created At:</strong> {new Date(review.createdAt).toLocaleDateString()}</Text>
-              </Box>
+          <Grid templateColumns="repeat(5, 1fr)" gap={6}>
+            {reviews.map((review, index) => (
+              <GridItem
+                key={review.id}
+                p={4}
+                bg="gray.50"
+                borderRadius="md"
+                boxShadow="sm"
+                textAlign="center"
+              >
+                <Text fontWeight="bold">{review.title}</Text>
+                <Text>{review.description}</Text>
+                <Text fontSize="sm">
+                  <strong>Created:</strong> {new Date(review.createdAt).toLocaleDateString()}
+                </Text>
+              </GridItem>
             ))}
-          </VStack>
+          </Grid>
         ) : (
           <Text>No reviews available for this user.</Text>
         )}
       </Box>
     </Flex>
-
   );
 };
 

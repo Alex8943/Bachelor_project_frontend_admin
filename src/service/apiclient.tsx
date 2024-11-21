@@ -41,6 +41,26 @@ export const getOneUser = async ({id}) => {
   }
 }
 
+export const getAllUsers = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/users`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+}
+
+export const getUsersByRole = async (role_fk: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/users/role/${role_fk}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+}
+
 export const getReviews = async () => {
   try {
     const response = await axios.get(`${API_URL}/reviews`);

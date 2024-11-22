@@ -61,7 +61,7 @@ export const getUsersByRole = async (role_fk: number) => {
   }
 }
 
-export const getReviews = async () => {
+export const getAllReviews = async () => {
   try {
     const response = await axios.get(`${API_URL}/reviews`);
     return response.data;

@@ -7,18 +7,17 @@ import {
   InputRightAddon,
 } from "@chakra-ui/react";
 import { Search2Icon } from "@chakra-ui/icons";
-import { searchReviews } from "../../service/apiclient";
+import { searchReviews, searchUsers } from "../../service/apiclient"; // Import both search APIs
 import { navigate } from "@reach/router";
 
-const SearchBar = ({ onSearchResults }) => {
-
+const SearchBar = ({ onSearchResults, searchType = "reviews" }) => {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedInput, setDebouncedInput] = useState(''); // For debounce
 
   const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
-    if (!authToken) {
-      navigate('/'); // Redirect to login page if token is missing
-    }
+  if (!authToken) {
+    navigate('/'); // Redirect to login page if token is missing
+  }
 
   // Debounce effect
   useEffect(() => {
@@ -33,15 +32,20 @@ const SearchBar = ({ onSearchResults }) => {
     const handleSearch = async () => {
       if (!debouncedInput) return; // Prevent search if input is empty
       try {
-        const result = await searchReviews(debouncedInput); // Call the API with the debounced input
+        let result;
+        if (searchType === "reviews") {
+          result = await searchReviews(debouncedInput); // Search reviews
+        } else if (searchType === "users") {
+          result = await searchUsers(debouncedInput); // Search users
+        }
         onSearchResults(result); // Pass results to parent component
       } catch (error) {
-        console.error("Error searching for reviews:", error);
+        console.error(`Error searching for ${searchType}:`, error);
       }
     };
 
     handleSearch();
-  }, [debouncedInput]); // Trigger search when debouncedInput changes
+  }, [debouncedInput, searchType]); // Trigger search when debouncedInput or searchType changes
 
   return (
     <InputGroup
@@ -55,7 +59,7 @@ const SearchBar = ({ onSearchResults }) => {
       </InputLeftElement>
       <Input
         type="text"
-        placeholder="Search..."
+        placeholder={`Search ${searchType}...`}
         border="2px solid"
         borderColor="blue.600"
         borderRadius="full"

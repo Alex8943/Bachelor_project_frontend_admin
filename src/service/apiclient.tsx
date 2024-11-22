@@ -93,6 +93,17 @@ export const searchReviews = async (value: string) => {
   }
 };
 
+export const searchUsers = async (value: string) => {
+  try {
+    const response = await axios.get(`${API_URL}/findUser/${value}`);
+    console.log("Search results:: ", response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};
+
 export const getOneReview = async (id: number) => {
   try {
     const response = await axios.get(`${API_URL}/getReview/${id}`);

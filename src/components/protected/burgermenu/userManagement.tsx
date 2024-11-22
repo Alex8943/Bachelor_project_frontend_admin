@@ -17,7 +17,15 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import { getAllUsers, getUsersByRole, getOneUser, deleteUser, showAllDeletedUsers} from '../../../service/apiclient';
+import SearchBar from '../searchbar'; // Import your reusable SearchBar component
+import {
+  getAllUsers,
+  getUsersByRole,
+  getOneUser,
+  deleteUser,
+  showAllDeletedUsers,
+  searchUsers,
+} from '../../../service/apiclient';
 
 const UserManagement = () => {
   const [message, setMessage] = useState('');
@@ -74,6 +82,19 @@ const UserManagement = () => {
       setError('Failed to fetch blocked users');
       console.error('Error fetching blocked users:', error);
       setLoading(false);
+    }
+  };
+
+  // Handle user search
+  const handleSearchResults = (results) => {
+    console.log('Search results:', results); // Debugging
+    if (results && results.length > 0) {
+      setUsers(results); // Set users to the search results
+      setCurrentPage(1); // Reset pagination
+      setError(null); // Clear error message
+    } else {
+      setUsers([]); // Clear users if no results found
+      setError('No users found. Try a different search term.');
     }
   };
 
@@ -152,16 +173,16 @@ const UserManagement = () => {
             User Management
           </Heading>
 
+          <SearchBar
+            searchType="users" // Search logic for users
+            onSearchResults={handleSearchResults} // Update users state with search results
+          />
+
           {message && <Text color="green.500" mb={4}>{message}</Text>}
           {error ? (
-            <>
-              <Text color="red.500" textAlign="center" mb={4}>
-                {error}
-              </Text>
-              <Button onClick={() => fetchUsers(selectedRole)} colorScheme="blue">
-                Retry
-              </Button>
-            </>
+            <Text color="red.500" textAlign="center" mb={4}>
+              {error}
+            </Text>
           ) : (
             <>
               {/* Dropdown to filter by role */}

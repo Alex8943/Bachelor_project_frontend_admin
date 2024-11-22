@@ -122,16 +122,17 @@ export const getAllReviewsByUser = async (id: number) => {
   }
 }
 
-/*
+
 export const deleteReview = async (id: number) => {
   try {
-    await axios.delete(`${API_URL}/update/review/${id}`);
+    
+    await axios.put(`${API_URL}/delete/review/${id}`);
   } catch (error) {
     console.error('Error deleting review:', error);
     throw error;
   }
 };
-*/
+
 
 
 export const topGenres = async () => {

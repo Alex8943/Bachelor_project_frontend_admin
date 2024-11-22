@@ -13,9 +13,9 @@ import {
   Flex,
   Button,
 } from "@chakra-ui/react";
-import { getRangeOfReviews, getOneUser, deleteReview, showAllDeletedReviews } from "../../service/apiclient";
+import { getRangeOfReviews, getOneUser, deleteReview, showAllDeletedReviews } from "../../../service/apiclient";
 import { Link, useNavigate } from "react-router-dom";
-import SearchBar from "./searchbar";
+import SearchBar from "../Users/searchbar";
 
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);

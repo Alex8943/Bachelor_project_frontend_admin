@@ -4,14 +4,14 @@ import { Grid, GridItem, Flex } from '@chakra-ui/react';
 import NavBar from './components/navbar';
 import FrontPage from './components/authentication/frontpage';
 import SignUp from './components/authentication/signup';
-import Dashboard from './components/protected/dashboard';
-import UserDetails from './components/protected/userDetails';
-import ReviewDetails from './components/protected/reviewDetails';
+import Dashboard from './components/protected/Reviews/dashboard';
+import UserDetails from './components/protected/Users/userDetails';
+import ReviewDetails from './components/protected/Reviews/reviewDetails';
 import ProtectedRoute from './components/isProtected';
 import UserManagement from './components/protected/burgermenu/userManagement';
 import Statistics from './components/protected/burgermenu/statistics';
 import UserProfile from './components/authentication/userProfile';
-import UpdateReview from './components/protected/updateReview';
+import UpdateReview from './components/protected/Reviews/updateReview';
 
 
 function App() {

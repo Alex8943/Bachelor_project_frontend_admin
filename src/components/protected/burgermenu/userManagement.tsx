@@ -17,7 +17,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import SearchBar from '../searchbar'; // Import your reusable SearchBar component
+import SearchBar from '../Users/searchbar'; // Import your reusable SearchBar component
 import {
   getAllUsers,
   getUsersByRole,

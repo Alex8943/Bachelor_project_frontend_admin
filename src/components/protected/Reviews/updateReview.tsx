@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getOneReview, updateReview } from "../../service/apiclient";
+import { getOneReview, updateReview } from "../../../service/apiclient";
 import {
   Box,
   FormControl,

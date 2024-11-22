@@ -12,8 +12,8 @@ import {
   Grid,
   GridItem,
 } from '@chakra-ui/react';
-import { getOneUser, getAllReviewsByUser } from '../../service/apiclient';
-import Sidebar from './sidebar';
+import { getOneUser, getAllReviewsByUser } from '../../../service/apiclient';
+import Sidebar from '../sidebar';
 import { navigate } from '@reach/router';
 
 const UserDetails = () => {

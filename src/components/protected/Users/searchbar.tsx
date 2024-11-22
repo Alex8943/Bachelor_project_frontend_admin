@@ -7,7 +7,7 @@ import {
   InputRightAddon,
 } from "@chakra-ui/react";
 import { Search2Icon } from "@chakra-ui/icons";
-import { searchReviews, searchUsers } from "../../service/apiclient"; // Import both search APIs
+import { searchReviews, searchUsers } from "../../../service/apiclient"; // Import both search APIs
 import { navigate } from "@reach/router";
 
 const SearchBar = ({ onSearchResults, searchType = "reviews" }) => {

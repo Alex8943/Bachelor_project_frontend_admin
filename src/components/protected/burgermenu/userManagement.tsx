@@ -17,7 +17,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import { getAllUsers, getUsersByRole, getOneUser } from '../../../service/apiclient';
+import { getAllUsers, getUsersByRole, getOneUser, deleteUser, showAllDeletedUsers} from '../../../service/apiclient';
 
 const UserManagement = () => {
   const [message, setMessage] = useState('');
@@ -27,6 +27,7 @@ const UserManagement = () => {
   const [error, setError] = useState(null); // Error state
   const [selectedRole, setSelectedRole] = useState(''); // Selected role for filtering
   const [currentPage, setCurrentPage] = useState(1); // Current page
+  const [showBlocked, setShowBlocked] = useState(false); // Toggle for showing blocked users
   const navigate = useNavigate();
   const [userRoleName, setUserRoleName] = useState(''); // Role name from access
   const usersPerPage = 25; // Number of users per page
@@ -62,6 +63,30 @@ const UserManagement = () => {
     }
   };
 
+  // Fetch blocked users
+  const fetchBlockedUsers = async () => {
+    try {
+      setLoading(true);
+      const blockedUsers = await showAllDeletedUsers();
+      setUsers(blockedUsers); // Set state to show only blocked users
+      setLoading(false);
+    } catch (error) {
+      setError('Failed to fetch blocked users');
+      console.error('Error fetching blocked users:', error);
+      setLoading(false);
+    }
+  };
+
+  // Handle user deletion
+  const handleDelete = async (id) => {
+    try {
+      await deleteUser(id); // Call API to soft delete the user
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id)); // Remove the deleted user from the list
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
+
   // Pagination logic
   const startIndex = (currentPage - 1) * usersPerPage;
   const endIndex = startIndex + usersPerPage;
@@ -94,8 +119,12 @@ const UserManagement = () => {
   // Initial fetch of users
   useEffect(() => {
     checkAccess();
-    fetchUsers();
-  }, [checkAccess]);
+    if (showBlocked) {
+      fetchBlockedUsers();
+    } else {
+      fetchUsers();
+    }
+  }, [checkAccess, showBlocked]);
 
   // Filter users by role
   const handleRoleChange = (event) => {
@@ -103,6 +132,12 @@ const UserManagement = () => {
     setSelectedRole(role);
     setCurrentPage(1); // Reset pagination
     fetchUsers(role);
+  };
+
+  // Toggle blocked users
+  const toggleBlockedUsers = () => {
+    setShowBlocked((prev) => !prev); // Toggle between all users and blocked users
+    setCurrentPage(1); // Reset pagination
   };
 
   // Pagination controls
@@ -130,77 +165,95 @@ const UserManagement = () => {
           ) : (
             <>
               {/* Dropdown to filter by role */}
-              <Select
-                placeholder="Filter by Role"
-                onChange={handleRoleChange}
-                value={selectedRole}
-                mb={4}
-                width="200px"
-                color="blue.700"
-                borderColor="blue.400"
-              >
-                <option value="1">Role 1</option>
-                <option value="2">Role 2</option>
-                <option value="3">Role 3</option>
-              </Select>
+              <Flex mb={4} alignItems="center">
+                <Select
+                  placeholder="Filter by Role"
+                  onChange={handleRoleChange}
+                  value={selectedRole}
+                  mr={4}
+                  width="200px"
+                  color="blue.700"
+                  borderColor="blue.400"
+                >
+                  <option value="1">Role 1</option>
+                  <option value="2">Role 2</option>
+                  <option value="3">Role 3</option>
+                </Select>
+                <Button
+                  colorScheme={showBlocked ? "gray" : "gray"}
+                  onClick={toggleBlockedUsers}
+                >
+                  {showBlocked ? "Back to All Users" : "Show Blocked Users"}
+                </Button>
+              </Flex>
 
               {/* Users Table */}
               {loading ? (
                 <Spinner size="xl" color="blue.500" />
               ) : (
-                <>
-                  <TableContainer mt={4}>
-                    <Table variant="striped" colorScheme="blue">
-                      <Thead>
-                        <Tr>
-                          <Th>ID</Th>
-                          <Th>Name</Th>
-                          <Th>Email</Th>
-                          <Th>Role</Th>
-                          <Th>Created At</Th>
-                        </Tr>
-                      </Thead>
-                      <Tbody>
-                        {paginatedUsers.map((user) => (
-                          <Tr key={user.id}>
-                            <Td>{user.id}</Td>
+                <TableContainer mt={4}>
+                  <Table variant="striped" colorScheme="blue">
+                    <Thead>
+                      <Tr>
+                        <Th>ID</Th>
+                        <Th>Name</Th>
+                        <Th>Email</Th>
+                        <Th>Role</Th>
+                        <Th>Updated at</Th>
+                        {!showBlocked && <Th>Actions</Th>}
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {paginatedUsers.map((user) => (
+                        <Tr key={user.id}>
+                          <Td>{user.id}</Td>
+                          <Td>
+                            <Link
+                              to={`/user/${user.id}`}
+                              style={{ color: 'black', textDecoration: 'underline' }}
+                            >
+                              {`${user.name} ${user.lastname}`}
+                            </Link>
+                          </Td>
+                          <Td>{user.email}</Td>
+                          <Td>{user.Role?.name || 'Unknown'}</Td>
+                          <Td>{new Date(user.updatedAt).toLocaleDateString()}</Td>
+                          {!showBlocked && (
                             <Td>
-                              <Link
-                                to={`/user/${user.id}`}
-                                style={{ color: 'black', textDecoration: 'underline' }}
+                              <Button
+                                colorScheme="red"
+                                size="sm"
+                                onClick={() => handleDelete(user.id)}
                               >
-                                {`${user.name} ${user.lastname}`}
-                              </Link>
+                                Delete
+                              </Button>
                             </Td>
-                            <Td>{user.email}</Td>
-                            <Td>{user.Role?.name || 'Unknown'}</Td>
-                            <Td>{new Date(user.createdAt).toLocaleDateString()}</Td>
-                          </Tr>
-                        ))}
-                      </Tbody>
-                    </Table>
-                  </TableContainer>
-
-                  {/* Pagination Controls */}
-                  <Flex justifyContent="center" mt={4}>
-                    <Button
-                      onClick={goToPreviousPage}
-                      isDisabled={currentPage === 1}
-                      colorScheme="blue"
-                      mr={4}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      onClick={goToNextPage}
-                      isDisabled={endIndex >= users.length}
-                      colorScheme="blue"
-                    >
-                      Next
-                    </Button>
-                  </Flex>
-                </>
+                          )}
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
               )}
+
+              {/* Pagination Controls */}
+              <Flex justifyContent="center" mt={4}>
+                <Button
+                  onClick={goToPreviousPage}
+                  isDisabled={currentPage === 1}
+                  colorScheme="blue"
+                  mr={4}
+                >
+                  Previous
+                </Button>
+                <Button
+                  onClick={goToNextPage}
+                  isDisabled={endIndex >= users.length}
+                  colorScheme="blue"
+                >
+                  Next
+                </Button>
+              </Flex>
             </>
           )}
         </Box>

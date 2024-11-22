@@ -34,39 +34,28 @@ const Dashboard = () => {
     navigate("/"); // Redirect to login page if token is missing
   }
 
+  // Fetch reviews or deleted reviews based on toggle state
   const fetchReviews = async (page) => {
     try {
       setLoading(true);
       const startIndex = (page - 1) * reviewsPerPage;
-      const data = await getRangeOfReviews(startIndex + reviewsPerPage);
-      setReviews(data.slice(startIndex, startIndex + reviewsPerPage));
+      if (showDeleted) {
+        const deletedReviews = await showAllDeletedReviews();
+        setReviews(deletedReviews.slice(startIndex, startIndex + reviewsPerPage));
+      } else {
+        const data = await getRangeOfReviews(startIndex + reviewsPerPage);
+        setReviews(data.slice(startIndex, startIndex + reviewsPerPage));
+      }
       setFilteredReviews([]); // Reset filtered reviews when changing pages
       setLoading(false);
     } catch (error) {
-      setError("Failed to load reviews");
-      setLoading(false);
-    }
-  };
-
-  const fetchDeletedReviews = async () => {
-    try {
-      setLoading(true);
-      const deletedReviews = await showAllDeletedReviews();
-      setReviews(deletedReviews); // Set the reviews to show only deleted reviews
-      setFilteredReviews([]); // Reset filtered reviews
-      setLoading(false);
-    } catch (error) {
-      setError("Failed to load deleted reviews");
+      setError(showDeleted ? "Failed to load deleted reviews" : "Failed to load reviews");
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (!showDeleted) {
-      fetchReviews(currentPage);
-    } else {
-      fetchDeletedReviews();
-    }
+    fetchReviews(currentPage);
   }, [currentPage, showDeleted]);
 
   const fetchUserDetails = async (userId) => {
@@ -130,7 +119,7 @@ const Dashboard = () => {
               colorScheme={showDeleted ? "gray" : "gray"}
               onClick={toggleDeletedReviews}
             >
-              {showDeleted ? "Back to Active Reviews" : "Show Deleted Reviews"}
+              {showDeleted ? "Back to all reviews" : "Show deleted reviews"}
             </Button>
           </Flex>
 
@@ -195,21 +184,23 @@ const Dashboard = () => {
               </TableContainer>
 
               {/* Pagination Controls */}
-              {!showDeleted && (
-                <Flex justifyContent="center" mt={4}>
-                  <Button
-                    onClick={goToPreviousPage}
-                    isDisabled={currentPage === 1}
-                    colorScheme="blue"
-                    mr={4}
-                  >
-                    Previous
-                  </Button>
-                  <Button onClick={goToNextPage} colorScheme="blue">
-                    Next
-                  </Button>
-                </Flex>
-              )}
+              <Flex justifyContent="center" mt={4}>
+                <Button
+                  onClick={goToPreviousPage}
+                  isDisabled={currentPage === 1}
+                  colorScheme="blue"
+                  mr={4}
+                >
+                  Previous
+                </Button>
+                <Button
+                  onClick={goToNextPage}
+                  isDisabled={reviews.length < reviewsPerPage}
+                  colorScheme="blue"
+                >
+                  Next
+                </Button>
+              </Flex>
             </>
           )}
         </Box>

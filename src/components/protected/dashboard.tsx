@@ -148,7 +148,7 @@ const Dashboard = () => {
                       <Th color="blue.700">Title</Th>
                       <Th color="blue.700">Content</Th>
                       <Th color="blue.700">Created by</Th>
-                      <Th color="blue.700">Review created</Th>
+                      <Th color="blue.700">Review updated</Th>
                       {!showDeleted && <Th color="blue.700">Actions</Th>} {/* Hide Actions for deleted reviews */}
                     </Tr>
                   </Thead>
@@ -168,7 +168,7 @@ const Dashboard = () => {
                           {truncateText(review.description, 50)}
                         </Td>
                         <Td>{users[review.user_fk]?.name || "Unknown"}</Td>
-                        <Td>{new Date(review.createdAt).toLocaleDateString()}</Td>
+                        <Td>{new Date(review.updatedAt).toLocaleDateString()}</Td>
                         {!showDeleted && (
                           <Td>
                             <Button

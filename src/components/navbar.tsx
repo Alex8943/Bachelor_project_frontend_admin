@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import React from "react";
 import logo from "../assets/logo.webp";
-import Sidebar from './protected/sidebar';
+import Sidebar from './protected/burgermenu/sidebar';
 
 const Navbar = () => {
   return (

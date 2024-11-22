@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Heading, Text, Spinner, Alert, AlertIcon, VStack } from '@chakra-ui/react';
 import { getOneReview } from '../../../service/apiclient';
-import Sidebar from '../sidebar';
+import Sidebar from '../burgermenu/sidebar';
 import { navigate } from '@reach/router';
 
 const ReviewDetails = () => {

@@ -126,6 +126,15 @@ export const updateReview = async (id, data) => {
   }
 };
 
+export const updateUser = async (id, data) => {
+  try {
+    await axios.put(`${API_URL}/update/user/${id}`, data);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
+  }
+}
+
 
 export const getAllReviewsByUser = async (id: number) => {
   try {

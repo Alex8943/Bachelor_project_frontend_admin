@@ -12,6 +12,7 @@ import UserManagement from './components/protected/burgermenu/userManagement';
 import Statistics from './components/protected/burgermenu/statistics';
 import UserProfile from './components/authentication/userProfile';
 import UpdateReview from './components/protected/Reviews/updateReview';
+import UpdateUser from './components/protected/Users/updateUser';
 
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
               <Route path="/statistics" element={<Statistics />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/update/review/:id" element={<UpdateReview/>} />
+              <Route path="/update/user/:id" element={<UpdateUser/>} />
             </Routes>
           </GridItem>
         </Grid>

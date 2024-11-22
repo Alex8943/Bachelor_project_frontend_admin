@@ -13,7 +13,7 @@ import {
   GridItem,
 } from '@chakra-ui/react';
 import { getOneUser, getAllReviewsByUser } from '../../../service/apiclient';
-import Sidebar from '../sidebar';
+import Sidebar from '../burgermenu/sidebar';
 import { navigate } from '@reach/router';
 
 const UserDetails = () => {

@@ -8,16 +8,14 @@ import {
   Th,
   Td,
   TableContainer,
-  Heading,
   Spinner,
   Text,
   Flex,
   Button,
 } from "@chakra-ui/react";
-import { getRangeOfReviews, getOneUser, deleteReview } from "../../service/apiclient";
-import { Link } from "react-router-dom";
+import { getRangeOfReviews, getOneUser, deleteReview, showAllDeletedReviews } from "../../service/apiclient";
+import { Link, useNavigate } from "react-router-dom";
 import SearchBar from "./searchbar";
-import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);
@@ -27,6 +25,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 25;
+  const [showDeleted, setShowDeleted] = useState(false); // Toggle for deleted reviews
 
   const navigate = useNavigate();
 
@@ -49,9 +48,26 @@ const Dashboard = () => {
     }
   };
 
+  const fetchDeletedReviews = async () => {
+    try {
+      setLoading(true);
+      const deletedReviews = await showAllDeletedReviews();
+      setReviews(deletedReviews); // Set the reviews to show only deleted reviews
+      setFilteredReviews([]); // Reset filtered reviews
+      setLoading(false);
+    } catch (error) {
+      setError("Failed to load deleted reviews");
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchReviews(currentPage);
-  }, [currentPage]);
+    if (!showDeleted) {
+      fetchReviews(currentPage);
+    } else {
+      fetchDeletedReviews();
+    }
+  }, [currentPage, showDeleted]);
 
   const fetchUserDetails = async (userId) => {
     if (!users[userId]) {
@@ -90,13 +106,32 @@ const Dashboard = () => {
     }
   };
 
+  const handleUpdate = (id) => {
+    navigate(`/update/review/${id}`); // Redirect to the UpdateReview component with the review ID
+  };
+
+  const toggleDeletedReviews = () => {
+    setShowDeleted((prev) => !prev); // Toggle between showing all and deleted reviews
+    setCurrentPage(1); // Reset to the first page
+  };
+
   return (
     <Flex minHeight="100vh" direction="column" mt={90}>
       <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" p={4}>
         <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}>
-          {/* Search Bar and Dropdown */}
+          {/* Search Bar */}
           <Flex justifyContent="space-between" alignItems="center" mb={4}>
             <SearchBar onSearchResults={handleSearchResults} />
+          </Flex>
+
+          {/* Deleted Reviews Button */}
+          <Flex justifyContent="center" mb={4}>
+            <Button
+              colorScheme={showDeleted ? "gray" : "gray"}
+              onClick={toggleDeletedReviews}
+            >
+              {showDeleted ? "Back to Active Reviews" : "Show Deleted Reviews"}
+            </Button>
           </Flex>
 
           {loading ? (
@@ -114,7 +149,7 @@ const Dashboard = () => {
                       <Th color="blue.700">Content</Th>
                       <Th color="blue.700">Created by</Th>
                       <Th color="blue.700">Review created</Th>
-                      <Th color="blue.700">Actions</Th>
+                      {!showDeleted && <Th color="blue.700">Actions</Th>} {/* Hide Actions for deleted reviews */}
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -134,15 +169,25 @@ const Dashboard = () => {
                         </Td>
                         <Td>{users[review.user_fk]?.name || "Unknown"}</Td>
                         <Td>{new Date(review.createdAt).toLocaleDateString()}</Td>
-                        <Td>
-                          <Button
-                            colorScheme="red"
-                            size="sm"
-                            onClick={() => handleDelete(review.id)}
-                          >
-                            Delete
-                          </Button>
-                        </Td>
+                        {!showDeleted && (
+                          <Td>
+                            <Button
+                              colorScheme="blue"
+                              size="sm"
+                              onClick={() => handleUpdate(review.id)}
+                              mr={2}
+                            >
+                              Update
+                            </Button>
+                            <Button
+                              colorScheme="red"
+                              size="sm"
+                              onClick={() => handleDelete(review.id)}
+                            >
+                              Delete
+                            </Button>
+                          </Td>
+                        )}
                       </Tr>
                     ))}
                   </Tbody>
@@ -150,19 +195,21 @@ const Dashboard = () => {
               </TableContainer>
 
               {/* Pagination Controls */}
-              <Flex justifyContent="center" mt={4}>
-                <Button
-                  onClick={goToPreviousPage}
-                  isDisabled={currentPage === 1}
-                  colorScheme="blue"
-                  mr={4}
-                >
-                  Previous
-                </Button>
-                <Button onClick={goToNextPage} colorScheme="blue">
-                  Next
-                </Button>
-              </Flex>
+              {!showDeleted && (
+                <Flex justifyContent="center" mt={4}>
+                  <Button
+                    onClick={goToPreviousPage}
+                    isDisabled={currentPage === 1}
+                    colorScheme="blue"
+                    mr={4}
+                  >
+                    Previous
+                  </Button>
+                  <Button onClick={goToNextPage} colorScheme="blue">
+                    Next
+                  </Button>
+                </Flex>
+              )}
             </>
           )}
         </Box>

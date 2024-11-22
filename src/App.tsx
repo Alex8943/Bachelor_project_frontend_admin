@@ -11,6 +11,7 @@ import ProtectedRoute from './components/isProtected';
 import UserManagement from './components/protected/burgermenu/userManagement';
 import Statistics from './components/protected/burgermenu/statistics';
 import UserProfile from './components/authentication/userProfile';
+import UpdateReview from './components/protected/updateReview';
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
               <Route path="/users" element={<UserManagement />} />
               <Route path="/statistics" element={<Statistics />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/update/review/:id" element={<UpdateReview/>} />
             </Routes>
           </GridItem>
         </Grid>

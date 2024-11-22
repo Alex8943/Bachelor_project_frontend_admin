@@ -103,14 +103,15 @@ export const getOneReview = async (id: number) => {
   }
 }
 
-export const updateReview = async (value: any) => {
+export const updateReview = async (id, data) => {
   try {
-    await axios.put(`${API_URL}/review/${value.title}`);
+    await axios.put(`${API_URL}/update/review/${id}`, data);
   } catch (error) {
-    console.error('Error updating review:', error);
+    console.error("Error updating review:", error);
     throw error;
   }
 };
+
 
 export const getAllReviewsByUser = async (id: number) => {
   try {
@@ -132,6 +133,16 @@ export const deleteReview = async (id: number) => {
     throw error;
   }
 };
+
+export const showAllDeletedReviews = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/softDeletedReviews`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+}
 
 
 

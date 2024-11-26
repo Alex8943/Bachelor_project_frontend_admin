@@ -10,7 +10,7 @@ import ReviewDetails from './components/protected/Reviews/reviewDetails';
 import ProtectedRoute from './components/isProtected';
 import UserManagement from './components/protected/burgermenu/userManagement';
 import Statistics from './components/protected/burgermenu/statistics';
-import UserProfile from './components/authentication/userProfile';
+import UserProfile from './components/authentication/UserProfile';
 import UpdateReview from './components/protected/Reviews/updateReview';
 import UpdateUser from './components/protected/Users/updateUser';
 

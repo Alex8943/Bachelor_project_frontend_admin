@@ -219,3 +219,12 @@ export const undeleteReview = async (id: number) => {
   }
 };
 
+export const undeleteUser = async (id: number) => {
+  try {
+    await axios.put(`${API_URL}/undelete/user/${id}`);
+  } catch (error) {
+    console.error('Error undeleting user:', error);
+    throw error;
+  }
+};
+

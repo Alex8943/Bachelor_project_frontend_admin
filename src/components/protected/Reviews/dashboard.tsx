@@ -15,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { getRangeOfReviews, getOneUser, deleteReview, showAllDeletedReviews } from "../../../service/apiclient";
 import { Link, useNavigate } from "react-router-dom";
-import SearchBar from "../Users/searchbar";
+import SearchBar from "../Users/Searchbar";
 
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);
@@ -26,13 +26,45 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 25;
   const [showDeleted, setShowDeleted] = useState(false); // Toggle for deleted reviews
+  const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
-  const authToken = sessionStorage.getItem("authToken");
-  if (!authToken) {
-    navigate("/"); // Redirect to login page if token is missing
-  }
+ 
+  useEffect(() => {
+    const checkAccess = async () => {
+      
+      try {
+        const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+        if (!authToken) {
+          navigate('/'); // Redirect to login page if token is missing
+          setMessage("Access denied: you need to log in first");
+          throw new Error("Access denied: you need to log in first");
+        }
+        
+        const userRole = localStorage.getItem('userRole');
+        
+        if (userRole === '3') {
+          setMessage("Access denied: you can't access this page");
+          console.log("Admins can't access this page");
+          navigate('/dashboard'); // Redirect to another page
+        } else if (userRole === '1') {
+          setMessage('Access granted to User management!');
+          
+        } else {
+          setMessage('Access denied: Unrecognized role');
+          console.log("Unrecognized role:", userRole);
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        setMessage('Failed to verify access.');
+        console.error('Access check error:', error);
+      }
+    };
+
+    checkAccess(); // Run the access check on component mount
+  }, [navigate]); // Add navigate as a dependency
+
 
   // Fetch reviews or deleted reviews based on toggle state
   const fetchReviews = async (page) => {

@@ -16,7 +16,7 @@ import {
   Select,
   Button,
 } from '@chakra-ui/react';
-import SearchBar from '../Users/searchbar'; // Import your reusable SearchBar component
+import SearchBar from '../Users/Searchbar'; // Import your reusable SearchBar component
 import {
   getAllUsers,
   getUsersByRole,
@@ -33,6 +33,39 @@ const UserManagement = () => {
   const [showBlocked, setShowBlocked] = useState(false);
   const navigate = useNavigate();
   const usersPerPage = 25;
+  const [message, setMessage] = useState('');
+
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+        if (!authToken) {
+          navigate('/'); // Redirect to login page if token is missing
+        }
+      try {
+        
+        const userRole = localStorage.getItem('userRole');
+        
+        if (userRole === '2') {
+          setMessage("Access denied: Admins can't access this page");
+          console.log("Admins can't access this page");
+          navigate('/dashboard'); // Redirect to another page
+        } else if (userRole === '1') {
+          setMessage('Access granted to User management!');
+          
+        } else {
+          setMessage('Access denied: Unrecognized role');
+          console.log("Unrecognized role:", userRole);
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        setMessage('Failed to verify access.');
+        console.error('Access check error:', error);
+      }
+    };
+
+    checkAccess(); // Run the access check on component mount
+  }, [navigate]); // Add navigate as a dependency
 
   // Fetch all users or filtered users by role
   const fetchUsers = async (role_fk = '') => {

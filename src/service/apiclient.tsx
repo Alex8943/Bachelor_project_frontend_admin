@@ -209,3 +209,13 @@ export const getRangeOfReviews = async (max: any) => {
   }
 }
  
+
+export const undeleteReview = async (id: number) => {
+  try {
+    await axios.put(`${API_URL}/undelete/review/${id}`);
+  } catch (error) {
+    console.error('Error undeleting review:', error);
+    throw error;
+  }
+};
+

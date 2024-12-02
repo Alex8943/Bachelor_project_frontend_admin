@@ -228,3 +228,22 @@ export const undeleteUser = async (id: number) => {
   }
 };
 
+
+export const getUpdates = (onMessageCallback: (data: any) => void) => {
+  const eventSource = new EventSource(`${API_URL}/sse/events`);
+
+  eventSource.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log("New event received:", data);
+    onMessageCallback(data); // Pass the data to the callback
+  };
+
+  eventSource.onerror = (error) => {
+    console.error("Error with SSE connection:", error);
+    eventSource.close(); // Close the connection on error
+  };
+
+  return eventSource;
+};
+
+

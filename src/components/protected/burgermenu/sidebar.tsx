@@ -59,6 +59,11 @@ const Sidebar = () => {
                 <Icon as={FiSettings} boxSize={5} mr={2} />
                 <Text>statistics</Text>
               </Link>
+
+              <Link href="/sse" display="flex" alignItems="center">
+                <Icon as={FiSettings} boxSize={5} mr={2} />
+                <Text>Real-time updates</Text>
+              </Link>
             </VStack>
           </Box>
         </DrawerContent>

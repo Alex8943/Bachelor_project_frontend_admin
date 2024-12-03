@@ -70,15 +70,19 @@ const Dashboard = () => {
   }, [currentPage, showDeleted]);
 
   const fetchUserDetails = async (userId) => {
-    if (!users[userId]) {
-      try {
-        const user = await getOneUser({ id: userId });
-        setUsers((prevUsers) => ({ ...prevUsers, [userId]: user }));
-      } catch (error) {
-        console.log("Failed to load user details:", error);
-      }
+    if (users[userId]) {
+      return; 
+    }
+  
+    try {
+      const user = await getOneUser({ id: userId });
+      setUsers((prevUsers) => ({ ...prevUsers, [userId]: user }));
+    } catch (error) {
+      console.error(`Failed to load user details for user ID: ${userId}`, error);
+      setUsers((prevUsers) => ({ ...prevUsers, [userId]: { name: "Unknown" } })); // Fallback to "Unknown"
     }
   };
+  
 
   useEffect(() => {
     (filteredReviews.length > 0 ? filteredReviews : reviews).forEach((review) => {

@@ -94,10 +94,11 @@ export const getOneUser = async ({ id }) => {
   }
 };
 
+//Is not from reviews services!!
 export const getAllReviewsByUser = async (id: number) => {
   try {
     const authToken = getAuthToken();
-    const response = await axios.get(`${SECOND_API_URL}/user/${id}/reviews`, {
+    const response = await axios.get(`${API_URL}/user/${id}/reviews`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     return response.data;
@@ -226,6 +227,7 @@ export const topGenres = async () => {
 };
 
 
+//Reviews services
 export const showAllDeletedReviews = async () => {
   try {
     const authToken = getAuthToken();

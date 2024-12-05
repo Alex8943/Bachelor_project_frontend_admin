@@ -10,38 +10,40 @@ interface ImportMeta {
 
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}`;
 const SECOND_API_URL = `${import.meta.env.VITE_SECOND_BACKEND_URL}`;
+const THIRD_API_URL = `${import.meta.env.VITE_THIRD_BACKEND_URL}`;
+const FOURTH_API_URL = `${import.meta.env.VITE_FOURTH_BACKEND_URL}`;
+const FIFTH_API_URL = `${import.meta.env.VITE_FIFTH_BACKEND_URL}`;
+const SIXTH_API_URL = `${import.meta.env.VITE_SIXTH_BACKEND_URL}`;
+const SEVENTH_API_URL = `${import.meta.env.VITE_SEVENTH_BACKEND_URL}`;
+const EIGHTH_API_URL = `${import.meta.env.VITE_EIGHTH_BACKEND_URL}`;
+const NINTH_API_URL = `${import.meta.env.VITE_NINTH_BACKEND_URL}`;
 
 export const login = async ({ email, password }) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, { email, password });
 
-    // Extract the authToken from the response
     const { authToken } = response.data;
 
     if (authToken) {
-      // Save the authToken to localStorage
       localStorage.setItem('authToken', authToken);
     } else {
       throw new Error('Login failed: No authToken returned');
     }
 
-    return response.data; // Return the entire response if needed
+    return response.data;
   } catch (error) {
     console.error('Error during login:', error);
     throw error;
   }
 };
 
-
 export const signup = async ({ name, lastname, email, password }) => {
   try {
     const response = await axios.post(`${API_URL}/auth/signup`, { name, lastname, email, password });
 
-    // Extract the authToken from the response
     const { authToken } = response.data;
 
     if (authToken) {
-      // Save the authToken to localStorage
       localStorage.setItem('authToken', authToken);
     } else {
       throw new Error('Signup failed: No authToken returned');
@@ -54,8 +56,6 @@ export const signup = async ({ name, lastname, email, password }) => {
   }
 };
 
-
-// Helper function to get authToken and handle errors
 const getAuthToken = (): string => {
   const authToken = localStorage.getItem('authToken');
   if (!authToken) {
@@ -79,7 +79,7 @@ export const getAllUsers = async () => {
     console.error('Error fetching users:', error);
     throw error;
   }
-}
+};
 
 export const getOneUser = async ({ id }) => {
   try {
@@ -90,108 +90,6 @@ export const getOneUser = async ({ id }) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching one user:', error);
-    throw error;
-  }
-};
-
-export const getUsersByRole = async (role_fk: number) => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${API_URL}/users/role/${role_fk}`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching users by role:', error);
-    throw error;
-  }
-};
-
-export const getAllReviews = async () => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${SECOND_API_URL}/reviews`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching all reviews:', error);
-    throw error;
-  }
-};
-
-export const getRoles = async () => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${API_URL}/roles`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching roles:', error);
-    throw error;
-  }
-};
-
-export const searchReviews = async (value: string) => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${SECOND_API_URL}/review/${value}`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error searching reviews:', error);
-    throw error;
-  }
-};
-
-export const searchUsers = async (value: string) => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${API_URL}/findUser/${value}`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error searching users:', error);
-    throw error;
-  }
-};
-
-export const getOneReview = async (id: number) => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${SECOND_API_URL}/getReview/${id}`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching one review:', error);
-    throw error;
-  }
-};
-
-export const updateReview = async (id, data) => {
-  try {
-    const authToken = getAuthToken();
-    await axios.put(`${SECOND_API_URL}/update/review/${id}`, data, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-  } catch (error) {
-    console.error('Error updating review:', error);
-    throw error;
-  }
-};
-
-export const updateUser = async (id, data) => {
-  try {
-    const authToken = getAuthToken();
-    await axios.put(`${API_URL}/update/user/${id}`, data, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-  } catch (error) {
-    console.error('Error updating user:', error);
     throw error;
   }
 };
@@ -209,27 +107,53 @@ export const getAllReviewsByUser = async (id: number) => {
   }
 };
 
-export const deleteReview = async (id: number) => {
+export const getUsersByRole = async (role_fk: number) => {
   try {
     const authToken = getAuthToken();
-    await axios.put(`${SECOND_API_URL}/delete/review/${id}`, {}, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-  } catch (error) {
-    console.error('Error deleting review:', error);
-    throw error;
-  }
-};
-
-export const showAllDeletedReviews = async () => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${SECOND_API_URL}/softDeletedReviews`, {
+    const response = await axios.get(`${API_URL}/users/role/${role_fk}`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching deleted reviews:', error);
+    console.error('Error fetching users by role:', error);
+    throw error;
+  }
+};
+
+export const getRoles = async () => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.get(`${API_URL}/roles`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching roles:', error);
+    throw error;
+  }
+};
+
+export const searchUsers = async (value: string) => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.get(`${API_URL}/findUser/${value}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching users:', error);
+    throw error;
+  }
+};
+
+export const updateUser = async (id, data) => {
+  try {
+    const authToken = getAuthToken();
+    await axios.put(`${API_URL}/update/user/${id}`, data, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
     throw error;
   }
 };
@@ -259,44 +183,6 @@ export const deleteUser = async (id: number) => {
   }
 };
 
-export const topGenres = async () => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${API_URL}/genres/top`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching top genres:', error);
-    throw error;
-  }
-};
-
-export const getRangeOfReviews = async (max: any) => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${SECOND_API_URL}/reviews/${max}`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching range of reviews:', error);
-    throw error;
-  }
-};
-
-export const undeleteReview = async (id: number) => {
-  try {
-    const authToken = getAuthToken();
-    await axios.put(`${SECOND_API_URL}/undelete/review/${id}`, {}, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-  } catch (error) {
-    console.error('Error undeleting review:', error);
-    throw error;
-  }
-};
-
 export const undeleteUser = async (id: number) => {
   try {
     const authToken = getAuthToken();
@@ -315,16 +201,133 @@ export const getUpdates = (onMessageCallback: (data: any) => void) => {
   eventSource.onmessage = (event) => {
     const data = JSON.parse(event.data);
     console.log("New event received:", data);
-    onMessageCallback(data); // Pass the data to the callback
+    onMessageCallback(data);
   };
 
   eventSource.onerror = (error) => {
     console.error("Error with SSE connection:", error);
-    eventSource.close(); // Close the connection on error
+    eventSource.close();
   };
 
   return eventSource;
 };
 
+export const topGenres = async () => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.get(`${API_URL}/genres/top`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching top genres:', error);
+    throw error;
+  }
+};
 
 
+export const showAllDeletedReviews = async () => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.get(`${SECOND_API_URL}/softDeletedReviews`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching deleted reviews:', error);
+    throw error;
+  }
+};
+
+export const createReview = async (data: any) => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.post(`${THIRD_API_URL}/review`, data, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating review:', error);
+    throw error;
+  }
+};
+
+
+export const searchReviews = async (value: string) => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.get(`${FOURTH_API_URL}/review/${value}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    console.log("Data from the backend: ", response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error searching reviews:', error);
+    throw error;
+  }
+};
+
+
+export const updateReview = async (id: number, data: any) => {
+  try {
+    const authToken = getAuthToken();
+    await axios.put(`${FIFTH_API_URL}/update/review/${id}`, data, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+  } catch (error) {
+    console.error('Error updating review:', error);
+    throw error;
+  }
+};
+
+
+export const getOneReview = async (id: number) => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.get(`${SIXTH_API_URL}/review/${id}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching one review:', error);
+    throw error;
+  }
+};
+
+
+export const getRangeOfReviews = async (max: number) => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.get(`${SEVENTH_API_URL}/reviews/${max}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching range of reviews:', error);
+    throw error;
+  }
+};
+
+export const deleteReview = async (id: number) => {
+  try {
+    const authToken = getAuthToken();
+    await axios.put(`${EIGHTH_API_URL}/delete/review/${id}`, {}, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    throw error;
+  }
+};
+
+export const undeleteReview = async (id: number) => {
+  try {
+    const authToken = getAuthToken();
+    await axios.put(`${NINTH_API_URL}/undelete/review/${id}`, {}, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+  } catch (error) {
+    console.error('Error undeleting review:', error);
+    throw error;
+  }
+};

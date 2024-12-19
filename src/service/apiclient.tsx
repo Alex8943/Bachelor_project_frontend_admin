@@ -87,6 +87,7 @@ export const getOneUser = async ({ id }) => {
     const response = await axios.get(`${API_URL}/user/${id}`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
+    console.log("Auth Token:", authToken);
     return response.data;
   } catch (error) {
     console.error('Error fetching one user:', error);
@@ -231,7 +232,7 @@ export const topGenres = async () => {
 export const showAllDeletedReviews = async () => {
   try {
     const authToken = getAuthToken();
-    const response = await axios.get(`${SECOND_API_URL}/softDeletedReviews`, {
+    const response = await axios.get(`${SECOND_API_URL}/deleted/reviews`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     return response.data;

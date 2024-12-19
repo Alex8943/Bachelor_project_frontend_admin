@@ -14,7 +14,7 @@ import UserProfile from './components/authentication/UserProfile';
 import UpdateReview from './components/protected/Reviews/updateReview';
 import UpdateUser from './components/protected/Users/updateUser';
 import RealTimeUpdates from './components/protected/RealTimeUpdates';
-
+import RuleSetComponent from './components/terms_and_conditions';
 
 function App() {
   
@@ -49,6 +49,7 @@ function App() {
               <Route path="/update/review/:id" element={<UpdateReview/>} />
               <Route path="/update/user/:id" element={<UpdateUser/>} />
               <Route path="/sse" element={<RealTimeUpdates />} />
+              <Route path="/rules" element={<RuleSetComponent />} />
             </Routes>
           </GridItem>
         </Grid>

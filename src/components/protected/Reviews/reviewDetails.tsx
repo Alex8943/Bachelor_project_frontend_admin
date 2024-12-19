@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Heading, Text, Spinner, Alert, AlertIcon, VStack } from '@chakra-ui/react';
 import { getOneReview } from '../../../service/apiclient';
 import Sidebar from '../burgermenu/Sidebar';
-import { navigate } from '@reach/router';
 
 const ReviewDetails = () => {
   const { id } = useParams(); // Get review ID from URL
+  const navigate = useNavigate();
+
   const [review, setReview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
+  useEffect(() => {
+    const authToken = sessionStorage.getItem('authToken');
     if (!authToken) {
       navigate('/'); // Redirect to login page if token is missing
+      return;
     }
 
-  useEffect(() => {
     const fetchReview = async () => {
       try {
         const reviewData = await getOneReview(id);
@@ -29,7 +31,7 @@ const ReviewDetails = () => {
     };
 
     fetchReview();
-  }, [id]);
+  }, [id, navigate]);
 
   if (loading) {
     return (
@@ -62,11 +64,20 @@ const ReviewDetails = () => {
             <Text><strong>ID:</strong> {review.id}</Text>
             <Text><strong>Title:</strong> {review.title}</Text>
             <Text><strong>Description:</strong> {review.description}</Text>
-            <Text><strong>Media ID:</strong> {review.media_fk}</Text>
-            <Text><strong>Platform ID:</strong> {review.platform_fk}</Text>
-            <Text><strong>User ID:</strong> {review.user_fk}</Text>
+            <Text><strong>Media:</strong> {review.media?.name || 'Unknown'}</Text>
+            <Text>
+                <strong>Platform:</strong>{" "}
+                <a href={review.platform.link} target="_blank" rel="noopener noreferrer">
+                  {review.platform.link}
+                </a>
+            </Text>
+
+            <Text><strong>User:</strong> {review.user ? `${review.user.name} ${review.user.lastname}` : 'Unknown'}</Text>
             <Text><strong>Created At:</strong> {new Date(review.createdAt).toLocaleDateString()}</Text>
             <Text><strong>Updated At:</strong> {new Date(review.updatedAt).toLocaleDateString()}</Text>
+            {review.genres && review.genres.length > 0 && (
+              <Text><strong>Genres:</strong> {review.genres.map((genre) => genre.name).join(', ')}</Text>
+            )}
           </VStack>
         ) : (
           <Text>No review data available.</Text>

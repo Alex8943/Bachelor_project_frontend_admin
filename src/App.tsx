@@ -6,14 +6,14 @@ import NavBar from './components/Navbar';
 import FrontPage from './components/authentication/Frontpage';
 import SignUp from './components/authentication/Signup';
 import Dashboard from './components/protected/Reviews/Dashboard';
-import UserDetails from './components/protected/Users/userDetails';
+import UserDetails from './components/protected/Users/UserDetails';
 import ReviewDetails from './components/protected/Reviews/ReviewDetails';
 import ProtectedRoute from './components/isProtected';
 import UserManagement from './components/protected/burgermenu/userManagement';
 import Statistics from './components/protected/burgermenu/statistics';
 import UserProfile from './components/authentication/UserProfile';
-import UpdateReview from './components/protected/Reviews/updateReview';
-import UpdateUser from './components/protected/Users/updateUser';
+import UpdateReview from './components/protected/Reviews/UpdateReview';
+import UpdateUser from './components/protected/Users/UpdateUser';
 import RealTimeUpdates from './components/protected/RealTimeUpdates';
 
 

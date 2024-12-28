@@ -2,13 +2,12 @@ import React from 'react';
 import { Grid, GridItem, Flex } from '@chakra-ui/react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './components/AuthContext'; // Ensure the path to AuthContext is correct
-
 import NavBar from './components/Navbar';
 import FrontPage from './components/authentication/Frontpage';
 import SignUp from './components/authentication/Signup';
 import Dashboard from './components/protected/Reviews/Dashboard';
 import UserDetails from './components/protected/Users/userDetails';
-import ReviewDetails from './components/protected/Reviews/reviewDetails';
+import ReviewDetails from './components/protected/Reviews/ReviewDetails';
 import ProtectedRoute from './components/isProtected';
 import UserManagement from './components/protected/burgermenu/userManagement';
 import Statistics from './components/protected/burgermenu/statistics';

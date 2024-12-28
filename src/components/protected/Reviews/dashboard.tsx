@@ -32,6 +32,7 @@ const Dashboard = () => {
   const [showDeleted, setShowDeleted] = useState(false);
 
   const navigate = useNavigate();
+  
 
   // Check if the user is authenticated
   useEffect(() => {

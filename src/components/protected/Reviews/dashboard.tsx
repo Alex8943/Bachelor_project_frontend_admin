@@ -16,8 +16,8 @@ import {
 import {
   getRangeOfReviews,
   deleteReview,
-  showAllDeletedReviews,
-  undeleteReview,
+  //showAllDeletedReviews,
+  //undeleteReview,
 } from "../../../service/apiclient";
 import { Link, useNavigate } from "react-router-dom";
 import SearchBar from "../Users/Searchbar";
@@ -99,7 +99,7 @@ const Dashboard = () => {
   };
 
   // Handle undelete action
-  const handleUndelete = async (id) => {
+  /*const handleUndelete = async (id) => {
     try {
       await undeleteReview(id);
       setReviews((prev) => prev.filter((review) => review.id !== id));
@@ -107,6 +107,7 @@ const Dashboard = () => {
       console.error("Error undeleting review:", error);
     }
   };
+  */
 
   // Navigate to update review page
   const handleUpdate = (id) => {
@@ -114,10 +115,10 @@ const Dashboard = () => {
   };
 
   // Toggle between showing deleted reviews or all reviews
-  const toggleDeletedReviews = () => {
+  /*const toggleDeletedReviews = () => {
     setShowDeleted((prev) => !prev);
     setCurrentPage(1);
-  };
+  };*/
 
   return (
     <Flex minHeight="100vh" direction="column" mt={90}>
@@ -125,12 +126,6 @@ const Dashboard = () => {
         <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}>
           <Flex justifyContent="space-between" alignItems="center" mb={4}>
             <SearchBar onSearchResults={handleSearchResults} />
-          </Flex>
-
-          <Flex justifyContent="center" mb={4}>
-            <Button colorScheme={showDeleted ? "gray" : "gray"} onClick={toggleDeletedReviews}>
-              {showDeleted ? "Back to all reviews" : "Show deleted reviews"}
-            </Button>
           </Flex>
 
           {loading ? (

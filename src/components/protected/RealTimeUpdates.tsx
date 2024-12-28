@@ -12,6 +12,9 @@ const RealTimeUpdates = () => {
       setEvents((prevEvents) => [data, ...prevEvents]); // Add new event to the top of the list
     });
 
+    
+    
+
     // Cleanup on component unmount
     return () => {
       eventSource.close();
@@ -47,7 +50,8 @@ const RealTimeUpdates = () => {
               marginTop={"100px"}
             >
               <Text fontSize="lg" fontWeight="bold">
-                Event: {event.event || "Unknown"}
+               {/* Event: {event.event || "Unknown"} */}
+                Event: This is a test
               </Text>
               <Text>User: {user.name || "Unknown"}</Text>
               <Text>Email: {user.email || "Unknown"}</Text>

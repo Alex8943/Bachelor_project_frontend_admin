@@ -2,11 +2,12 @@ import React from 'react';
 import { Box, VStack, Heading, Text, Link, Icon, IconButton, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure } from "@chakra-ui/react";
 import { FiHome, FiUser, FiSettings, FiMenu } from "react-icons/fi";
 import { useEffect } from 'react';
-import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 
 
 const Sidebar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
 
   const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
     if (!authToken) {

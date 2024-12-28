@@ -13,8 +13,9 @@ import {
   GridItem,
 } from '@chakra-ui/react';
 import { getOneUser, getAllReviewsByUser } from '../../../service/apiclient';
-import Sidebar from '../burgermenu/sidebar';
-import { navigate } from '@reach/router';
+import Sidebar from '../burgermenu/Sidebar';
+import { useNavigate } from 'react-router-dom';
+
 
 const UserDetails = () => {
   const { id } = useParams(); // Get user ID from URL
@@ -24,6 +25,7 @@ const UserDetails = () => {
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [error, setError] = useState(null);
   const [errorReviews, setErrorReviews] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')

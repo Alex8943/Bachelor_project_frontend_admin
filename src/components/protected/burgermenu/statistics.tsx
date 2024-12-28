@@ -34,12 +34,9 @@ const Statistics = () => {
       navigate('/'); // Redirect to login page if token is missing
     } else {
       if (userRole === "2" || storedRoleName === "admin") {
-        console.log("Admins can't access this page");
         navigate('/dashboard'); // Redirect to another page
       } else if (userRole === '1') {
         setMessage('Access granted to Statistics!');
-        console.log("Access granted for statistics");
-        console.log("User role name:", storedRoleName);
       } else {
         console.log("Unrecognized role:", userRole);
         navigate('/dashboard');

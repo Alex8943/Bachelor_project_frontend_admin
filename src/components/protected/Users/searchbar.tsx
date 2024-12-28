@@ -8,11 +8,12 @@ import {
 } from "@chakra-ui/react";
 import { Search2Icon } from "@chakra-ui/icons";
 import { searchReviews, searchUsers } from "../../../service/apiclient"; // Import both search APIs
-import { navigate } from "@reach/router";
+import { useNavigate } from "react-router-dom";
 
 const SearchBar = ({ onSearchResults, searchType = "reviews" }) => {
   const [searchInput, setSearchInput] = useState('');
   const [debouncedInput, setDebouncedInput] = useState(''); // For debounce
+  const navigate = useNavigate();
 
   const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
   if (!authToken) {
@@ -32,13 +33,8 @@ const SearchBar = ({ onSearchResults, searchType = "reviews" }) => {
     const handleSearch = async () => {
       if (!debouncedInput) return; // Prevent search if input is empty
       try {
-        let result;
-        if (searchType === "reviews") {
-          result = await searchReviews(debouncedInput); // Search reviews
-        } else if (searchType === "users") {
-          result = await searchUsers(debouncedInput); // Search users
-        }
-        onSearchResults(result); // Pass results to parent component
+        const result = await searchUsers(debouncedInput);
+        onSearchResults(result); 
       } catch (error) {
         console.error(`Error searching for ${searchType}:`, error);
       }

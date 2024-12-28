@@ -87,7 +87,6 @@ export const getOneUser = async ({ id }) => {
     const response = await axios.get(`${API_URL}/user/${id}`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
-    console.log("Auth Token:", authToken);
     return response.data;
   } catch (error) {
     console.error('Error fetching one user:', error);
@@ -198,18 +197,20 @@ export const undeleteUser = async (id: number) => {
 };
 
 export const getUpdates = (onMessageCallback: (data: any) => void) => {
-  const eventSource = new EventSource(`${API_URL}/sse/events`);
+  const eventSource = new EventSource(`${API_URL}/sse`);
 
   eventSource.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log("New event received:", data);
     onMessageCallback(data);
   };
+
 
   eventSource.onerror = (error) => {
     console.error("Error with SSE connection:", error);
     eventSource.close();
   };
+
+  console.log("Message event source:", eventSource);
 
   return eventSource;
 };
@@ -262,7 +263,6 @@ export const searchReviews = async (value: string) => {
     const response = await axios.get(`${FOURTH_API_URL}/review/${value}`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
-    console.log("Data from the backend: ", response.data);
     return response.data;
   } catch (error) {
     console.error('Error searching reviews:', error);

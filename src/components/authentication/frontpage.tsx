@@ -19,8 +19,6 @@ const FrontPage = () => {
     try {
         const response = await login({ email: formData.email, password: formData.password });
 
-        // Log the response to verify the structure
-        console.log('Login Response:', response);
 
         // Store session details directly, no need to set in component state
         sessionStorage.setItem('authToken', response.authToken);
@@ -28,7 +26,6 @@ const FrontPage = () => {
         sessionStorage.setItem('userName', response.user.name);
         sessionStorage.setItem('userEmail', response.user.email);
 
-        console.log('User Role Name:', response.user.Role.name);
 
         if (response.user.role_fk === 3) {
             setMessage("Customers can't login here");

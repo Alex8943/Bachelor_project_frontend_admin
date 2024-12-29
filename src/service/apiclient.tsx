@@ -197,7 +197,7 @@ export const undeleteUser = async (id: number) => {
 };
 
 export const getUpdates = (onMessageCallback: (data: any) => void) => {
-  const eventSource = new EventSource(`${API_URL}/sse`);
+  const eventSource = new EventSource(`${API_URL}/sse/events`);
 
   eventSource.onmessage = (event) => {
     const data = JSON.parse(event.data);

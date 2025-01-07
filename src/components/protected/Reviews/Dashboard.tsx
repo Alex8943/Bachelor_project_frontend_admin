@@ -13,11 +13,12 @@ import {
   Flex,
   Button,
 } from "@chakra-ui/react";
-import {
-  getRangeOfReviews,
-  deleteReview,
-  //showAllDeletedReviews,
-  //undeleteReview,
+import { 
+  getRangeOfReviews, 
+  getOneUser, 
+  deleteReview, 
+  showAllDeletedReviews, 
+  undeleteReview 
 } from "../../../service/apiclient";
 import { Link, useNavigate } from "react-router-dom";
 import SearchBar from "../Users/Searchbar";
@@ -25,16 +26,15 @@ import SearchBar from "../Users/Searchbar";
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);
   const [filteredReviews, setFilteredReviews] = useState([]);
+  const [users, setUsers] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 25;
-  const [showDeleted, setShowDeleted] = useState(false);
+  const [showDeleted, setShowDeleted] = useState(false); // Toggle for deleted reviews
 
   const navigate = useNavigate();
-  
 
-  // Check if the user is authenticated
   useEffect(() => {
     const checkAccess = async () => {
       const authToken = sessionStorage.getItem("authToken");
@@ -46,23 +46,18 @@ const Dashboard = () => {
     checkAccess();
   }, [navigate]);
 
-  // Fetch reviews with or without deleted state
   const fetchReviews = async (page) => {
     try {
       setLoading(true);
       const startIndex = (page - 1) * reviewsPerPage;
-      let reviewsData = [];
-
       if (showDeleted) {
         const deletedReviews = await showAllDeletedReviews();
-        reviewsData = deletedReviews.slice(startIndex, startIndex + reviewsPerPage);
+        setReviews(deletedReviews.slice(startIndex, startIndex + reviewsPerPage));
       } else {
-        const allReviews = await getRangeOfReviews(startIndex + reviewsPerPage);
-        reviewsData = allReviews.slice(startIndex, startIndex + reviewsPerPage);
+        const data = await getRangeOfReviews(startIndex + reviewsPerPage);
+        setReviews(data.slice(startIndex, startIndex + reviewsPerPage));
       }
-
-      setReviews(reviewsData);
-      setFilteredReviews([]);
+      setFilteredReviews([]); // Reset filtered reviews
       setLoading(false);
     } catch (error) {
       setError(showDeleted ? "Failed to load deleted reviews" : "Failed to load reviews");
@@ -70,26 +65,42 @@ const Dashboard = () => {
     }
   };
 
-  // Fetch reviews on component load and whenever the page or showDeleted state changes
   useEffect(() => {
     fetchReviews(currentPage);
   }, [currentPage, showDeleted]);
 
-  // Handle search results and ensure the user info is displayed
+  const fetchUserDetails = async (userId) => {
+    if (users[userId]) {
+      return; 
+    }
+  
+    try {
+      const user = await getOneUser({ id: userId });
+      setUsers((prevUsers) => ({ ...prevUsers, [userId]: user }));
+    } catch (error) {
+      console.error(`Failed to load user details for user ID: ${userId}`, error);
+      setUsers((prevUsers) => ({ ...prevUsers, [userId]: { name: "Unknown" } })); // Fallback to "Unknown"
+    }
+  };
+  
+
+  useEffect(() => {
+    (filteredReviews.length > 0 ? filteredReviews : reviews).forEach((review) => {
+      fetchUserDetails(review.user_fk);
+    });
+  }, [reviews, filteredReviews]);
+
   const handleSearchResults = (results) => {
     setFilteredReviews(results);
   };
 
-  // Truncate long text
   const truncateText = (text, length = 50) => {
     return text.length > length ? `${text.slice(0, length)}...` : text;
   };
 
-  // Pagination handlers
   const goToNextPage = () => setCurrentPage((prev) => prev + 1);
   const goToPreviousPage = () => setCurrentPage((prev) => (prev > 1 ? prev - 1 : 1));
 
-  // Handle delete action
   const handleDelete = async (id) => {
     try {
       await deleteReview(id);
@@ -99,27 +110,23 @@ const Dashboard = () => {
     }
   };
 
-  // Handle undelete action
-  /*const handleUndelete = async (id) => {
+  const handleUndelete = async (id) => {
     try {
-      await undeleteReview(id);
-      setReviews((prev) => prev.filter((review) => review.id !== id));
+      await undeleteReview(id); // Call the API to undelete the review
+      setReviews((prev) => prev.filter((review) => review.id !== id)); // Remove undeleted review from deleted list
     } catch (error) {
       console.error("Error undeleting review:", error);
     }
   };
-  */
 
-  // Navigate to update review page
   const handleUpdate = (id) => {
     navigate(`/update/review/${id}`);
   };
 
-  // Toggle between showing deleted reviews or all reviews
-  /*const toggleDeletedReviews = () => {
+  const toggleDeletedReviews = () => {
     setShowDeleted((prev) => !prev);
     setCurrentPage(1);
-  };*/
+  };
 
   return (
     <Flex minHeight="100vh" direction="column" mt={90}>
@@ -129,12 +136,16 @@ const Dashboard = () => {
             <SearchBar onSearchResults={handleSearchResults} />
           </Flex>
 
+          <Flex justifyContent="center" mb={4}>
+            <Button colorScheme={showDeleted ? "gray" : "gray"} onClick={toggleDeletedReviews}>
+              {showDeleted ? "Back to all reviews" : "Show deleted reviews"}
+            </Button>
+          </Flex>
+
           {loading ? (
             <Spinner size="xl" color="blue.500" />
           ) : error ? (
-            <Text color="red.500" textAlign="center">
-              {error}
-            </Text>
+            <Text color="red.500" textAlign="center">{error}</Text>
           ) : (
             <>
               <TableContainer mt={4}>
@@ -164,11 +175,7 @@ const Dashboard = () => {
                         <Td style={{ color: "rgba(0, 0, 0, 0.6)", whiteSpace: "nowrap" }}>
                           {truncateText(review.description, 50)}
                         </Td>
-                        <Td>
-                          {review.user
-                            ? `${review.user.name} ${review.user.lastname || ""}`
-                            : "Unknown"}
-                        </Td>
+                        <Td>{users[review.user_fk]?.name || "Unknown"}</Td>
                         <Td>{new Date(review.updatedAt).toLocaleDateString()}</Td>
                         <Td>
                           {showDeleted ? (

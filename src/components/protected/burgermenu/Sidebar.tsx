@@ -7,12 +7,6 @@ import { useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const navigate = useNavigate();
-
-  const authToken = sessionStorage.getItem('authToken'); // or localStorage.getItem('authToken')
-    if (!authToken) {
-      navigate('/'); // Redirect to login page if token is missing
-    }
 
   return (
     <>

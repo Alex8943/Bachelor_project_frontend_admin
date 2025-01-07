@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Box, Grid, Heading, Input, Button, Checkbox, Text, VStack } from '@chakra-ui/react';
+import { Box, Grid, Heading, Input, Button, Text, VStack } from '@chakra-ui/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../../service/apiclient';
 
 const FrontPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);  // <-- Add loading state
 
   const navigate = useNavigate();
 
@@ -16,31 +17,30 @@ const FrontPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);  // Start loading
     try {
-        const response = await login({ email: formData.email, password: formData.password });
+      const response = await login({ email: formData.email, password: formData.password });
 
+      sessionStorage.setItem('authToken', response.authToken);
+      sessionStorage.setItem('userRoleName', response.user.Role.name);
+      sessionStorage.setItem('userName', response.user.name);
+      sessionStorage.setItem('userEmail', response.user.email);
 
-        // Store session details directly, no need to set in component state
-        sessionStorage.setItem('authToken', response.authToken);
-        sessionStorage.setItem('userRoleName', response.user.Role.name); 
-        sessionStorage.setItem('userName', response.user.name);
-        sessionStorage.setItem('userEmail', response.user.email);
+      if (response.user.role_fk === 3) {
+        setMessage("Customers can't login here");
+        setIsLoading(false);  // Stop loading
+        return;
+      }
 
-
-        if (response.user.role_fk === 3) {
-            setMessage("Customers can't login here");
-            return;
-        }
-
-        setMessage('Login successful!');
-        navigate('/dashboard');
+      setMessage('Login successful!');
+      navigate('/dashboard');
     } catch (error) {
-        setMessage('Login failed. Please check your credentials.');
-        console.error('Login error:', error);
+      setMessage('Login failed. Please check your credentials.');
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);  // Stop loading
     }
-};
-
-  
+  };
 
   return (
     <Grid
@@ -48,14 +48,26 @@ const FrontPage = () => {
       templateColumns="1fr"
       alignItems="center"
       justifyContent="center"
+      width="100vw"
       bg="white"
+      color="gray.800"
     >
-      {/* Centered Sign-in Form */}
-      <Box width="100%" maxW="400px" p={8} boxShadow="md" borderRadius="md" marginRight="40px">
+      <Box
+        width="100%"
+        maxW="400px"
+        p={8}
+        boxShadow="lg"
+        borderRadius="md"
+        bg="white"
+        color="gray.800"
+        textAlign="center"
+        alignItems={'center'}
+        margin="0 auto"
+      >
         <form onSubmit={handleSubmit}>
           <VStack spacing={4} align="stretch">
-            <Heading as="h2" size="lg" textAlign="center">
-              Welcome back!
+            <Heading as="h2" size="lg" color="blue.500">
+              Welcome Back!
             </Heading>
             <Input
               placeholder="Email address"
@@ -63,6 +75,11 @@ const FrontPage = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
+              borderColor="black"
+              _hover={{ borderColor: 'black' }}
+              focusBorderColor="black"
+              isRequired
+              _placeholder={{ color: 'black' }}
             />
             <Input
               placeholder="Password"
@@ -70,8 +87,12 @@ const FrontPage = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
+              borderColor="black"
+              _hover={{ borderColor: 'black' }}
+              focusBorderColor="black"
+              isRequired
+              _placeholder={{ color: 'black' }}
             />
-            <Checkbox>Remember password</Checkbox>
             <Button colorScheme="blue" width="100%" type="submit">
               LOGIN
             </Button>

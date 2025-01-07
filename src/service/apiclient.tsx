@@ -123,10 +123,7 @@ export const getUsersByRole = async (role_fk: number) => {
 
 export const getRoles = async () => {
   try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${API_URL}/roles`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
+    const response = await axios.get(`${API_URL}/roles`);
     return response.data;
   } catch (error) {
     console.error('Error fetching roles:', error);

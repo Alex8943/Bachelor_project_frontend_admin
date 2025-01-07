@@ -23,6 +23,7 @@ const FrontPage = () => {
 
       sessionStorage.setItem('authToken', response.authToken);
       sessionStorage.setItem('userRoleName', response.user.Role.name);
+      sessionStorage.setItem('role_fk', response.user.role_fk);
       sessionStorage.setItem('userName', response.user.name);
       sessionStorage.setItem('userEmail', response.user.email);
 

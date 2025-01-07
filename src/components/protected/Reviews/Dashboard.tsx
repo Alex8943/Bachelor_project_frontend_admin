@@ -129,8 +129,22 @@ const Dashboard = () => {
   };
 
   return (
-    <Flex minHeight="100vh" direction="column" mt={90}>
-      <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" p={4}>
+    <Flex 
+      minHeight="100vh" 
+      direction="column" 
+      justifyContent="center" 
+      alignItems="center" 
+      bg="white"  // Set background to white
+      >
+      <Box 
+        width="100%"
+        maxWidth="80%"
+        boxShadow="lg"
+        p={8}
+        borderRadius="md"
+        bg="white"  // Set background for content area
+        
+        >
         <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}>
           <Flex justifyContent="space-between" alignItems="center" mb={4}>
             <SearchBar onSearchResults={handleSearchResults} />

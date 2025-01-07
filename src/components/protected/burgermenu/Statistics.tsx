@@ -10,6 +10,9 @@ const Statistics = () => {
   const [topGenres, setTopGenres] = useState([]); // State for storing genres
   const [error, setError] = useState(null);
   const [userRoleName, setUserRoleName] = useState(''); // Track role name
+  const [userName, setUserName] = useState(''); // Track user name
+  const [userEmail, setUserEmail] = useState(''); // Track user email
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTopGenres = async () => {
@@ -26,23 +29,28 @@ const Statistics = () => {
   }, []);
 
   useEffect(() => {
-    const authToken = sessionStorage.getItem('authToken');
-    const userRole = localStorage.getItem('userRole');
-    const storedRoleName = sessionStorage.getItem('userRoleName'); // Get role name from storage
-
-    if (!authToken || !userRole) {
-      navigate('/'); // Redirect to login page if token is missing
-    } else {
-      if (userRole === "2" || storedRoleName === "admin") {
-        navigate('/dashboard'); // Redirect to another page
-      } else if (userRole === '1') {
-        setMessage('Access granted to Statistics!');
-      } else {
-        console.log("Unrecognized role:", userRole);
-        navigate('/dashboard');
-      }
-    }
-  }, [navigate]);
+          const authToken = sessionStorage.getItem('authToken');
+          const storedName = sessionStorage.getItem('userName');
+          const storedEmail = sessionStorage.getItem('userEmail');
+          const storedRoleName = sessionStorage.getItem('userRoleName');
+          const storedRoleFk = sessionStorage.getItem('role_fk');
+  
+          if (!authToken) {
+              navigate('/');
+              return;
+          }else if(storedRoleName === 'Customer' || storedRoleFk === '3'){
+              navigate('/dashboard');
+              return;
+          }
+  
+          setUserName(storedName);
+          setUserEmail(storedEmail);
+          setUserRoleName(storedRoleName);
+          setLoading(false);
+  
+          console.log('User profile:', 'Name;', storedName, '\nEmail', storedEmail, '\nRolename', storedRoleName);
+          console.log("Auth token: ", authToken);
+      }, [navigate]);
 
   return (
     <Box>

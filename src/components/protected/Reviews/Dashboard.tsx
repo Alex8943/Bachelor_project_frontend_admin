@@ -131,8 +131,8 @@ const Dashboard = () => {
 
   return (
     <Flex minHeight="100vh" direction="column" mt={90}>
-      <Box display="flex" alignItems="center" justifyContent="center" minHeight="300vh" p={4} bg="white">
-        <Box maxWidth="80%" width="100%" mx="0" marginRight={200} marginLeft={450}>
+      <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" p={8} bg="white">
+        <Box maxWidth="180%" width="400%" mx="10" marginRight={300} marginLeft={250}>
           <Heading as="h1" size="lg" mb={4} textAlign="center" color="blue.600">
             Review Dashboard
           </Heading>

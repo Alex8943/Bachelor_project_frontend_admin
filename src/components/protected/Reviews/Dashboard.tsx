@@ -143,6 +143,8 @@ const Dashboard = () => {
         p={8}
         borderRadius="md"
         bg="white"  // Set background for content area
+        marginRight="400px"
+        marginLeft="400px"
         
         >
         <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}>

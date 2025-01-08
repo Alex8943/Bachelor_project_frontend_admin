@@ -7,18 +7,18 @@ import { topGenres as fetchTopGenresData } from "../../../service/apiclient";
 const Statistics = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const [topGenres, setTopGenres] = useState([]); // State for storing genres
+  const [topGenres, setTopGenres] = useState([]);
   const [error, setError] = useState(null);
-  const [userRoleName, setUserRoleName] = useState(''); // Track role name
-  const [userName, setUserName] = useState(''); // Track user name
-  const [userEmail, setUserEmail] = useState(''); // Track user email
+  const [userRoleName, setUserRoleName] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchTopGenres = async () => {
       try {
         const genresData = await fetchTopGenresData();
-        setTopGenres(genresData); // Store the genres data as-is
+        setTopGenres(genresData);
       } catch (err) {
         setError('Error fetching top genres');
         console.error('Error fetching top genres:', err);
@@ -29,46 +29,56 @@ const Statistics = () => {
   }, []);
 
   useEffect(() => {
-          const authToken = sessionStorage.getItem('authToken');
-          const storedName = sessionStorage.getItem('userName');
-          const storedEmail = sessionStorage.getItem('userEmail');
-          const storedRoleName = sessionStorage.getItem('userRoleName');
-          const storedRoleFk = sessionStorage.getItem('role_fk');
-  
-          if (!authToken) {
-              navigate('/');
-              return;
-          }else if(storedRoleName === 'Customer' || storedRoleFk === '3'){
-              navigate('/dashboard');
-              return;
-          }
-  
-          setUserName(storedName);
-          setUserEmail(storedEmail);
-          setUserRoleName(storedRoleName);
-          setLoading(false);
-  
-          console.log('User profile:', 'Name;', storedName, '\nEmail', storedEmail, '\nRolename', storedRoleName);
-          console.log("Auth token: ", authToken);
-      }, [navigate]);
+    const authToken = sessionStorage.getItem('authToken');
+    const storedName = sessionStorage.getItem('userName');
+    const storedEmail = sessionStorage.getItem('userEmail');
+    const storedRoleName = sessionStorage.getItem('userRoleName');
+    const storedRoleFk = sessionStorage.getItem('role_fk');
+
+    if (!authToken) {
+      navigate('/');
+      return;
+    } else if (storedRoleName === 'Customer' || storedRoleFk === '3') {
+      navigate('/dashboard');
+      return;
+    }
+
+    setUserName(storedName);
+    setUserEmail(storedEmail);
+    setUserRoleName(storedRoleName);
+    setLoading(false);
+
+    console.log('User profile:', 'Name;', storedName, '\nEmail', storedEmail, '\nRolename', storedRoleName);
+    console.log("Auth token: ", authToken);
+  }, [navigate]);
 
   return (
-    <Box>
-      <Text fontSize="2xl" mb={4}>Top Genres</Text>
-      {error && <Text color="red.500">{error}</Text>}
-      {message && <Text color="green.500" mb={4}>{message}</Text>}
-
-      {/* Add margin-top to move the chart down */}
-      <Box mt={10} height={400}> 
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={topGenres}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="review_count" fill="#8884d8" />
-          </BarChart>
-        </ResponsiveContainer>
+    <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bg="white" >
+      <Box 
+        bg="white" 
+        p={6} 
+        borderRadius="md" 
+        boxShadow="lg" 
+        width={{ base: '90%', md: '60%', lg: '50%' }} 
+        textAlign="center"
+        marginRight={400}
+        marginLeft={350}
+      >
+        <Text fontSize="3xl" mb={6}>Top Genres</Text>
+        {error && <Text color="red.500">{error}</Text>}
+        {message && <Text color="green.500" mb={4}>{message}</Text>}
+        
+        <Box height={300}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={topGenres}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="review_count" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </Box>
       </Box>
     </Box>
   );

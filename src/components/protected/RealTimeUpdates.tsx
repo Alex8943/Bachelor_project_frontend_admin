@@ -17,11 +17,25 @@ const RealTimeUpdates = () => {
   }, []);
 
   return (
-    <>
-      <Heading as="h2" size="lg" mb={4} marginTop="100px" textAlign="center">
+    <Box 
+      bg="white" 
+      minHeight="100vh" 
+      display="flex" 
+      flexDirection="column" 
+      justifyContent="center" 
+      alignItems="center"
+    >
+      <Heading as="h2" size="lg" mb={4} marginTop="50px" textAlign="center">
         Real-Time Updates
       </Heading>
-      <VStack spacing={4} align="stretch" width="50vw" margin="0 auto">
+      <VStack 
+        spacing={4} 
+        align="stretch" 
+        width="50vw" 
+        mb={10}
+        marginRight="400px"
+        marginLeft="350px"
+      >
         {events.length > 0 ? (
           events.map((event, index) => {
             const user = event.user || {};
@@ -29,11 +43,12 @@ const RealTimeUpdates = () => {
               <Box
                 key={index}
                 p={4}
-                bg="gray.100"
+                bg="black"
+                color="white"
                 borderRadius="md"
                 boxShadow="md"
                 border="1px solid"
-                borderColor="gray.200"
+                borderColor="gray.700"
                 textAlign="center"
               >
                 <Text fontSize="lg" fontWeight="bold">
@@ -51,13 +66,14 @@ const RealTimeUpdates = () => {
             );
           })
         ) : (
-          <Text textAlign="center" mt={10}>
+          <Text textAlign="center" mt={10} color="black">
             No events received yet.
           </Text>
         )}
       </VStack>
-    </>
+    </Box>
   );
 };
+
 
 export default RealTimeUpdates;

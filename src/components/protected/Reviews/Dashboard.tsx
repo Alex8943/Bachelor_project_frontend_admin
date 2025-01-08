@@ -12,6 +12,7 @@ import {
   Text,
   Flex,
   Button,
+  Heading,
 } from "@chakra-ui/react";
 import { 
   getRangeOfReviews, 
@@ -129,28 +130,16 @@ const Dashboard = () => {
   };
 
   return (
-    <Flex 
-      minHeight="100vh" 
-      direction="column" 
-      justifyContent="center" 
-      alignItems="center" 
-      bg="white"  // Set background to white
-      >
-      <Box 
-        width="100%"
-        maxWidth="80%"
-        boxShadow="lg"
-        p={8}
-        borderRadius="md"
-        bg="white"  // Set background for content area
-        marginRight="400px"
-        marginLeft="400px"
+    <Flex minHeight="100vh" direction="column" mt={90}>
+      <Box display="flex" alignItems="center" justifyContent="center" minHeight="300vh" p={4} bg="white">
+        <Box maxWidth="80%" width="100%" mx="0" marginRight={200} marginLeft={450}>
+          <Heading as="h1" size="lg" mb={4} textAlign="center" color="blue.600">
+            Review Dashboard
+          </Heading>
+          
         
-        >
-        <Box maxWidth="80%" width="100%" mx="auto" marginRight={200}>
-          <Flex justifyContent="space-between" alignItems="center" mb={4}>
             <SearchBar onSearchResults={handleSearchResults} />
-          </Flex>
+          
 
           <Flex justifyContent="center" mb={4}>
             <Button colorScheme={showDeleted ? "gray" : "gray"} onClick={toggleDeletedReviews}>
@@ -210,7 +199,7 @@ const Dashboard = () => {
                                 onClick={() => handleUpdate(review.id)}
                                 mr={2}
                               >
-                                Update
+                                Edit
                               </Button>
                               <Button
                                 colorScheme="red"
@@ -247,7 +236,7 @@ const Dashboard = () => {
               </Flex>
             </>
           )}
-        </Box>
+          </Box>
       </Box>
     </Flex>
   );

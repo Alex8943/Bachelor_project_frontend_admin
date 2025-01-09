@@ -9,7 +9,7 @@ import Dashboard from './components/protected/Reviews/Dashboard';
 import UserDetails from './components/protected/Users/UserDetails';
 import ReviewDetails from './components/protected/Reviews/ReviewDetails';
 import ProtectedRoute from './components/isProtected';
-import UserManagement from './components/protected/burgermenu/UserManagement';
+import UserManagement from './components/protected/Users/UserManagement';
 import Statistics from './components/protected/burgermenu/Statistics';
 import UserProfile from './components/authentication/UserProfile';
 import UpdateReview from './components/protected/Reviews/UpdateReview';

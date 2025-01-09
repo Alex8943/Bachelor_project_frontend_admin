@@ -34,7 +34,7 @@ const FrontPage = () => {
       }
 
       setMessage('Login successful!');
-      navigate('/dashboard');
+      navigate('/profile');
     } catch (error) {
       setMessage('Login failed. Please check your credentials.');
       console.error('Login error:', error);

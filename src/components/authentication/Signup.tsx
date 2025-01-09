@@ -63,7 +63,7 @@ function SignUp() {
       });
       setMessage('Signup successful!');
       localStorage.setItem('authToken', response.token);
-      navigate('/dashboard');
+      navigate('/profile');
     } catch (error) {
       setMessage('Signup failed. Please try again.');
       console.error('Signup error:', error);

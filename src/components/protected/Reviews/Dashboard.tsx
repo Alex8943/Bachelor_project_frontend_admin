@@ -36,16 +36,30 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkAccess = async () => {
-      const authToken = sessionStorage.getItem("authToken");
-      if (!authToken) {
-        navigate("/");
-        return;
-      }
-    };
-    checkAccess();
-  }, [navigate]);
+    const [userName, setUserName] = useState('');
+    const [userEmail, setUserEmail] = useState('');
+    const [userRoleName, setUserRoleName] = useState('');
+
+
+    useEffect(() => {
+        const authToken = sessionStorage.getItem('authToken');
+        const storedName = sessionStorage.getItem('userName');
+        const storedEmail = sessionStorage.getItem('userEmail');
+        const storedRoleName = sessionStorage.getItem('userRoleName');
+
+        if (!authToken) {
+            navigate('/');
+            return;
+        }
+
+        setUserName(storedName);
+        setUserEmail(storedEmail);
+        setUserRoleName(storedRoleName);
+        setLoading(false);
+
+        console.log('User profile:', 'Name;', storedName, '\nEmail', storedEmail, '\nRolename', storedRoleName);
+        console.log("Auth token: ", authToken);
+    }, [navigate]);
 
   const fetchReviews = async (page) => {
     try {

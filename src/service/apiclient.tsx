@@ -311,6 +311,7 @@ export const getRangeOfReviews = async (max: number) => {
 export const deleteReview = async (id: number) => {
   try {
     const authToken = getAuthToken();
+    console.log("User's auth token: ", authToken);
     await axios.put(`${EIGHTH_API_URL}/delete/review/${id}`, {}, {
       headers: { Authorization: `Bearer ${authToken}` },
     });

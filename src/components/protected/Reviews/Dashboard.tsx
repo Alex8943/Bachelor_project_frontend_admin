@@ -32,57 +32,53 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 25;
-  const [showDeleted, setShowDeleted] = useState(false);
-
-  const navigate = useNavigate();
+  const [showDeleted, setShowDeleted] = useState(false); // Toggle for deleted reviews
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userRoleName, setUserRoleName] = useState('');
 
-  useEffect(() => {
-    const authToken = sessionStorage.getItem('authToken');
-    const storedName = sessionStorage.getItem('userName');
-    const storedEmail = sessionStorage.getItem('userEmail');
-    const storedRoleName = sessionStorage.getItem('userRoleName');
+  const navigate = useNavigate();
 
-    if (!authToken) {
-      navigate('/'); // Redirect to login if not authenticated
-      return;
-    }
+    
 
-    setUserName(storedName);
-    setUserEmail(storedEmail);
-    setUserRoleName(storedRoleName);
-    setLoading(false);
 
-    console.log('User profile:', 'Name:', storedName, 'Email:', storedEmail, 'Role:', storedRoleName);
-    console.log("Auth token:", authToken);
-  }, [navigate]);
+    useEffect(() => {
+        const authToken = sessionStorage.getItem('authToken');
+        const storedName = sessionStorage.getItem('userName');
+        const storedEmail = sessionStorage.getItem('userEmail');
+        const storedRoleName = sessionStorage.getItem('userRoleName');
+
+        if (!authToken) {
+            navigate('/');
+            return;
+        }
+
+        setUserName(storedName);
+        setUserEmail(storedEmail);
+        setUserRoleName(storedRoleName);
+        setLoading(false);
+
+        //console.log('User profile:', 'Name;', storedName, '\nEmail', storedEmail, '\nRolename', storedRoleName);
+        //console.log("Auth token: ", authToken);
+    }, [navigate]);
+
 
   const fetchReviews = async (page) => {
     try {
       setLoading(true);
       const startIndex = (page - 1) * reviewsPerPage;
-
-      const authToken = sessionStorage.getItem('authToken');
-      if (!authToken) {
-        throw new Error("Unauthorized");
-      }
-
       if (showDeleted) {
-        const deletedReviews = await showAllDeletedReviews(authToken);
+        const deletedReviews = await showAllDeletedReviews();
         setReviews(deletedReviews.slice(startIndex, startIndex + reviewsPerPage));
       } else {
-        const data = await getRangeOfReviews(startIndex, reviewsPerPage, authToken);
+        const data = await getRangeOfReviews(startIndex + reviewsPerPage);
         setReviews(data.slice(startIndex, startIndex + reviewsPerPage));
       }
-
       setFilteredReviews([]); // Reset filtered reviews
       setLoading(false);
     } catch (error) {
       setError(showDeleted ? "Failed to load deleted reviews" : "Failed to load reviews");
       setLoading(false);
-      console.error(error);
     }
   };
 
@@ -94,16 +90,16 @@ const Dashboard = () => {
     if (users[userId]) {
       return; 
     }
-
+  
     try {
-      const authToken = sessionStorage.getItem('authToken');
-      const user = await getOneUser(userId, authToken);
+      const user = await getOneUser({ id: userId });
       setUsers((prevUsers) => ({ ...prevUsers, [userId]: user }));
     } catch (error) {
       console.error(`Failed to load user details for user ID: ${userId}`, error);
-      setUsers((prevUsers) => ({ ...prevUsers, [userId]: { name: "Unknown" } }));
+      setUsers((prevUsers) => ({ ...prevUsers, [userId]: { name: "Unknown" } })); // Fallback to "Unknown"
     }
   };
+  
 
   useEffect(() => {
     (filteredReviews.length > 0 ? filteredReviews : reviews).forEach((review) => {
@@ -124,9 +120,9 @@ const Dashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      const authToken = sessionStorage.getItem('authToken');
-      await deleteReview(id, authToken);
+      await deleteReview(id);
       setReviews((prev) => prev.filter((review) => review.id !== id));
+      console.log("User's auth token: ", sessionStorage.getItem('authToken'));
     } catch (error) {
       console.error("Error deleting review:", error);
     }
@@ -134,9 +130,8 @@ const Dashboard = () => {
 
   const handleUndelete = async (id) => {
     try {
-      const authToken = sessionStorage.getItem('authToken');
-      await undeleteReview(id, authToken);
-      setReviews((prev) => prev.filter((review) => review.id !== id));
+      await undeleteReview(id); // Call the API to undelete the review
+      setReviews((prev) => prev.filter((review) => review.id !== id)); // Remove undeleted review from deleted list
     } catch (error) {
       console.error("Error undeleting review:", error);
     }
@@ -158,8 +153,10 @@ const Dashboard = () => {
           <Heading as="h1" size="lg" mb={4} textAlign="center" color="blue.600">
             Review Dashboard
           </Heading>
-
-          <SearchBar onSearchResults={handleSearchResults} />
+          
+        
+            <SearchBar onSearchResults={handleSearchResults} />
+          
 
           <Flex justifyContent="center" mb={4}>
             <Button colorScheme={showDeleted ? "gray" : "gray"} onClick={toggleDeletedReviews}>
@@ -256,7 +253,7 @@ const Dashboard = () => {
               </Flex>
             </>
           )}
-        </Box>
+          </Box>
       </Box>
     </Flex>
   );

@@ -7,9 +7,9 @@ const RealTimeUpdates = () => {
 
   useEffect(() => {
     const eventSource = getUpdates((data) => {
-      console.log("New event received:", data);
       setEvents((prevEvents) => [data, ...prevEvents]); 
     });
+    
 
     return () => {
       eventSource.close();

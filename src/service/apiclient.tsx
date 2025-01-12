@@ -194,23 +194,34 @@ export const undeleteUser = async (id: number) => {
 };
 
 export const getUpdates = (onMessageCallback: (data: any) => void) => {
-  const eventSource = new EventSource(`${API_URL}/sse/events`);
+  const createEventSource = () => {
+    const eventSource = new EventSource(`${API_URL}/sse/events`);
 
-  eventSource.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    onMessageCallback(data);
+    eventSource.onopen = () => {
+      console.log("SSE connection established");
+    };
+
+    eventSource.onmessage = (event) => {
+      console.log("Raw SSE event received:", event);
+      const data = JSON.parse(event.data);
+      console.log("Parsed SSE data:", data);
+      onMessageCallback(data);
+    };
+
+    eventSource.onerror = () => {
+      console.error("SSE connection lost. Attempting to reconnect...");
+      eventSource.close();
+      setTimeout(createEventSource, 5000); // Reconnect after 5 seconds
+    };
+
+    return eventSource;
   };
 
-
-  eventSource.onerror = (error) => {
-    console.error("Error with SSE connection:", error);
-    eventSource.close();
-  };
-
-  console.log("Message event source:", eventSource);
-
-  return eventSource;
+  // Create the initial SSE connection
+  return createEventSource();
 };
+
+
 
 export const topGenres = async () => {
   try {

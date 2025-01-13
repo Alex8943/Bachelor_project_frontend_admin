@@ -12,9 +12,9 @@ const UserProfile = () => {
 
     useEffect(() => {
         const authToken = sessionStorage.getItem("authToken");
+        const storedRoleName = sessionStorage.getItem("role_fk");
         const storedName = sessionStorage.getItem("userName");
         const storedEmail = sessionStorage.getItem("userEmail");
-        const storedRoleName = sessionStorage.getItem("userRoleName");
 
         if (!authToken) {
             navigate("/");

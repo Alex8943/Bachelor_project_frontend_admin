@@ -21,9 +21,7 @@ const EventContext = createContext<EventContextType | undefined>(undefined);
 export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [events, setEvents] = useState<Event[]>([]);
 
-    const EXPIRY_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
-    // Initialize the events from localStorage and establish SSE connection
+    const EXPIRY_DURATION = 5 * 60 * 1000; 
     useEffect(() => {
         // Load events from localStorage and filter out expired events
         const savedEvents = localStorage.getItem("events");
@@ -42,12 +40,15 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             localStorage.setItem("events", JSON.stringify(validEvents));
         }
 
-        // Establish the SSE connection using getUpdates
-        const eventSource = getUpdates((data: Event) => {
-            console.log("New event received via SSE:", data);
+        // Add debug logs inside the SSE handler
+const eventSource = getUpdates((data: Event) => {
+    console.log("New event received via SSE:", data);
 
             // Add new event to the state
             setEvents((prevEvents) => {
+                console.log("Current events state:", prevEvents);
+                console.log("Attempting to add event:", data);
+
                 const isDuplicate = prevEvents.some(
                     (e) =>
                         e.timestamp === data.timestamp &&
@@ -62,12 +63,15 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
                 const updatedEvents = [...prevEvents, data];
 
+                console.log("Updated events state:", updatedEvents);
+
                 // Save updated events to localStorage
                 localStorage.setItem("events", JSON.stringify(updatedEvents));
 
                 return updatedEvents;
             });
         });
+
 
         // Cleanup SSE connection on unmount
         return () => {

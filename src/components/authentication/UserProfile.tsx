@@ -1,43 +1,43 @@
-import React, { useEffect, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Button, Heading, Text, VStack, Flex, Grid } from '@chakra-ui/react';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, Heading, Text, VStack, Flex, Grid } from "@chakra-ui/react";
+import EventList from "../../components/EventList";
 
 const UserProfile = () => {
     const navigate = useNavigate();
-    const [userName, setUserName] = useState('');
-    const [userEmail, setUserEmail] = useState('');
-    const [userRoleName, setUserRoleName] = useState('');
+    const [userName, setUserName] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+    const [userRoleName, setUserRoleName] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const authToken = sessionStorage.getItem('authToken');
-        const storedName = sessionStorage.getItem('userName');
-        const storedEmail = sessionStorage.getItem('userEmail');
-        const storedRoleName = sessionStorage.getItem('userRoleName');
+        const authToken = sessionStorage.getItem("authToken");
+        const storedName = sessionStorage.getItem("userName");
+        const storedEmail = sessionStorage.getItem("userEmail");
+        const storedRoleName = sessionStorage.getItem("userRoleName");
 
         if (!authToken) {
-            navigate('/');
+            navigate("/");
             return;
         }
 
-        setUserName(storedName);
-        setUserEmail(storedEmail);
-        setUserRoleName(storedRoleName);
+        setUserName(storedName || "");
+        setUserEmail(storedEmail || "");
+        setUserRoleName(storedRoleName || "");
         setLoading(false);
-
-        //console.log('User profile:', 'Name;', storedName, '\nEmail', storedEmail, '\nRolename', storedRoleName);
-        //console.log("Auth token: ", authToken);
     }, [navigate]);
 
     const handleSignOut = () => {
         sessionStorage.clear();
-        navigate('/');
+        navigate("/");
     };
 
     if (loading) {
         return (
             <Flex minHeight="100vh" justifyContent="center" alignItems="center">
-                <Text fontSize="lg" color="gray.600">Loading...</Text>
+                <Text fontSize="lg" color="gray.600">
+                    Loading...
+                </Text>
             </Flex>
         );
     }
@@ -81,14 +81,15 @@ const UserProfile = () => {
                             <strong>Role:</strong> {userRoleName || "Unknown"}
                         </Text>
                     </Box>
-                    <Button
-                        colorScheme="blue"
-                        width="100%"
-                        onClick={handleSignOut}
-                    >
+                    <Button colorScheme="blue" width="100%" onClick={handleSignOut}>
                         Sign Out
                     </Button>
                 </VStack>
+            </Box>
+
+            {/* Debugging Component */}
+            <Box mt={8}>
+                <EventList />
             </Box>
         </Grid>
     );

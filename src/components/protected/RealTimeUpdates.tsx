@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Text, VStack, Heading } from "@chakra-ui/react";
-import { useEventContext } from "../../components/eventContext"; // Import the EventContext
+import { useEventContext } from "../../components/EventContext"; // Import the EventContext
 
 const RealTimeUpdates: React.FC = () => {
     const { events } = useEventContext(); // Access the global events

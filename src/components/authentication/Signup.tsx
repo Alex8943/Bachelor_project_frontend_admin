@@ -33,7 +33,6 @@ function SignUp() {
     const fetchRoles = async () => {
       try {
         const rolesData = await getRoles();
-        console.log('Roles fetched:', rolesData); // Debug log
         if (!rolesData || rolesData.length === 0) {
           setMessage('No roles available. Please contact support.');
         } else {
@@ -54,7 +53,6 @@ function SignUp() {
   };
 
   const handleRoleSelect = (role_fk) => {
-    console.log('Selected role ID:', role_fk); // Debug log
     setFormData({ ...formData, role_fk: parseInt(role_fk, 10) }); // Convert to integer
   };
 
@@ -66,8 +64,6 @@ function SignUp() {
       setMessage('Please select a role.');
       return;
     }
-
-    console.log('Data sent to signup API:', formData); // Debug log
 
     try {
       const response = await signup({

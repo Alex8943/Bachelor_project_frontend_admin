@@ -11,7 +11,7 @@ interface ImportMeta {
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}`;
 const SECOND_API_URL = `${import.meta.env.VITE_SECOND_BACKEND_URL}`;
 const THIRD_API_URL = `${import.meta.env.VITE_THIRD_BACKEND_URL}`;
-const FOURTH_API_URL = `${import.meta.env.VITE_FOURTH_BACKEND_URL}`;
+//const FOURTH_API_URL = `${import.meta.env.VITE_FOURTH_BACKEND_URL}`;
 const FIFTH_API_URL = `${import.meta.env.VITE_FIFTH_BACKEND_URL}`;
 const SIXTH_API_URL = `${import.meta.env.VITE_SIXTH_BACKEND_URL}`;
 const SEVENTH_API_URL = `${import.meta.env.VITE_SEVENTH_BACKEND_URL}`;
@@ -39,7 +39,6 @@ export const login = async ({ email, password }) => {
 
 export const signup = async ({ name, lastname, email, password, role_fk }) => {
   try {
-    console.log("Response from backend: ", name, "\n", lastname, "\n", email, "\n", password, "\n",role_fk);
     const response = await axios.post(`${API_URL}/auth/signup`, { name, lastname, email, password, role_fk });
 
     const { authToken } = response.data;
@@ -132,6 +131,8 @@ export const getRoles = async () => {
   }
 };
 
+/*
+DELETED
 export const searchUsers = async (value: string) => {
   try {
     const authToken = getAuthToken();
@@ -144,6 +145,8 @@ export const searchUsers = async (value: string) => {
     throw error;
   }
 };
+
+*/
 
 export const updateUser = async (id, data) => {
   try {
@@ -265,7 +268,8 @@ export const createReview = async (data: any) => {
   }
 };
 
-
+/*
+DELETED
 export const searchReviews = async (value: string) => {
   try {
     const authToken = getAuthToken();
@@ -278,6 +282,7 @@ export const searchReviews = async (value: string) => {
     throw error;
   }
 };
+*/
 
 
 export const updateReview = async (id: number, data: any) => {

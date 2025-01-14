@@ -48,8 +48,6 @@ const Statistics = () => {
     setUserRoleName(storedRoleName);
     setLoading(false);
 
-    console.log('User profile:', 'Name;', storedName, '\nEmail', storedEmail, '\nRolename', storedRoleName);
-    console.log("Auth token: ", authToken);
   }, [navigate]);
 
   return (

@@ -37,9 +37,10 @@ export const login = async ({ email, password }) => {
   }
 };
 
-export const signup = async ({ name, lastname, email, password }) => {
+export const signup = async ({ name, lastname, email, password, role_fk }) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/signup`, { name, lastname, email, password });
+    console.log("Response from backend: ", name, "\n", lastname, "\n", email, "\n", password, "\n",role_fk);
+    const response = await axios.post(`${API_URL}/auth/signup`, { name, lastname, email, password, role_fk });
 
     const { authToken } = response.data;
 

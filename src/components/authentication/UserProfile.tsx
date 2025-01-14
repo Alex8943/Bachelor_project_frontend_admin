@@ -12,7 +12,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         const authToken = sessionStorage.getItem("authToken");
-        const storedRoleName = sessionStorage.getItem("role_fk");
+        const storedRoleName = sessionStorage.getItem("userRoleName");
         const storedName = sessionStorage.getItem("userName");
         const storedEmail = sessionStorage.getItem("userEmail");
 

@@ -19,23 +19,29 @@ import { signup, getRoles } from '../../service/apiclient';
 function SignUp() {
   const [formData, setFormData] = useState({
     name: '',
-    lastName: '',
-    role_fk: '',
+    lastname: '',
     email: '',
     password: '',
+    role_fk: '', // Ensure role_fk is numeric
   });
 
   const [message, setMessage] = useState('');
-  const navigate = useNavigate();
   const [roles, setRoles] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRoles = async () => {
       try {
         const rolesData = await getRoles();
-        setRoles(rolesData);
+        console.log('Roles fetched:', rolesData); // Debug log
+        if (!rolesData || rolesData.length === 0) {
+          setMessage('No roles available. Please contact support.');
+        } else {
+          setRoles(rolesData);
+        }
       } catch (error) {
         console.error('Error fetching roles:', error);
+        setMessage('Failed to fetch roles.');
       }
     };
 
@@ -47,26 +53,42 @@ function SignUp() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleRoleSelect = (roleId) => {
-    setFormData({ ...formData, role_fk: roleId });
+  const handleRoleSelect = (role_fk) => {
+    console.log('Selected role ID:', role_fk); // Debug log
+    setFormData({ ...formData, role_fk: parseInt(role_fk, 10) }); // Convert to integer
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.role_fk) {
+      setMessage('Please select a role.');
+      return;
+    }
+
+    console.log('Data sent to signup API:', formData); // Debug log
+
     try {
       const response = await signup({
         name: formData.name,
-        lastname: formData.lastName,
-        role_fk: formData.role_fk,
+        lastname: formData.lastname,
         email: formData.email,
         password: formData.password,
+        role_fk: formData.role_fk,
       });
+
+      sessionStorage.setItem('authToken', response.authToken);
+      sessionStorage.setItem('userName', response.user.name);
+      sessionStorage.setItem('userEmail', response.user.email);
+      sessionStorage.setItem('role_fk', response.user.role_fk);
+      sessionStorage.setItem('userRoleName', response.user.Role.name);
+
       setMessage('Signup successful!');
-      localStorage.setItem('authToken', response.token);
-      navigate('/profile');
+      navigate('/profile'); // Redirect to profile page
     } catch (error) {
-      setMessage('Signup failed. Please try again.');
       console.error('Signup error:', error);
+      setMessage('Signup failed. Please try again.');
     }
   };
 
@@ -111,8 +133,8 @@ function SignUp() {
             <Input
               placeholder="Last name"
               type="text"
-              name="lastName"
-              value={formData.lastName}
+              name="lastname"
+              value={formData.lastname}
               onChange={handleChange}
               borderColor="black"
               _hover={{ borderColor: 'black' }}
@@ -144,36 +166,42 @@ function SignUp() {
               _placeholder={{ color: 'black' }}
               isRequired
             />
-            
+
             <Menu>
-            <MenuButton
-              as={Button}
-              rightIcon={<ChevronDownIcon />}
-              border="1px solid black"  // Explicit black border
-              bg="white"
-              color="black"  // Text color black
-              width="100%"
-              _hover={{ bg: 'gray.100' }}  // Light gray on hover
-              _focus={{ borderColor: 'black' }}  // Ensure focus state has black border
-              textAlign="left"
-            >
-              {formData.role_fk
-                ? roles.find((r) => r.id === formData.role_fk)?.name
-                : 'Select role'}
-            </MenuButton>
+              <MenuButton
+                as={Button}
+                rightIcon={<ChevronDownIcon />}
+                border="1px solid black"
+                bg="white"
+                color="black"
+                width="100%"
+                _hover={{ bg: 'gray.100' }}
+                _focus={{ borderColor: 'black' }}
+                textAlign="left"
+              >
+                {formData.role_fk
+                  ? roles.find((r) => r.id === formData.role_fk)?.name || 'Invalid Role'
+                  : 'Select role'}
+              </MenuButton>
 
               <MenuList bg="white" borderColor="black">
-                {roles.map((role) => (
-                  <MenuItem
-                    key={role.id}
-                    onClick={() => handleRoleSelect(role.id)}
-                    _hover={{ bg: 'gray.100' }}
-                    bg="white"  // White background
-                    color="black"  // Black text
-                  >
-                    {role.name}
+                {roles.length > 0 ? (
+                  roles.map((role) => (
+                    <MenuItem
+                      key={role.id}
+                      onClick={() => handleRoleSelect(role.id)}
+                      _hover={{ bg: 'gray.100' }}
+                      bg="white"
+                      color="black"
+                    >
+                      {role.name}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem bg="white" color="black" disabled>
+                    No roles available
                   </MenuItem>
-                ))}
+                )}
               </MenuList>
             </Menu>
 

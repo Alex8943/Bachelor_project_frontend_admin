@@ -13,29 +13,38 @@ import {
   Spinner,
   Text,
   Heading,
-  Select,
   Button,
   Input,
+  Select,
 } from "@chakra-ui/react";
-import { getUsers, getUsersByRole, deleteUser, undeleteUser, showAllDeletedUsers } from "../../../service/apiclient";
+import { getUsers, deleteUser, undeleteUser, showAllDeletedUsers } from "../../../service/apiclient";
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [showBlocked, setShowBlocked] = useState(false);
+  const [loggedInUserRoleName, setLoggedInUserRoleName] = useState(null); // Store the logged-in user's role name
+  const [loggedInUserRoleId, setLoggedInUserRoleId] = useState(null); // Store the logged-in user's role ID
   const navigate = useNavigate();
   const usersPerPage = 25;
 
-  // Check access on mount
+  // Check access on mount and fetch logged-in user's role
   useEffect(() => {
     const authToken = sessionStorage.getItem("authToken");
+    const storedRoleName = sessionStorage.getItem("userRoleName");
+    const storedRoleId = sessionStorage.getItem("userRole");
+
     if (!authToken) {
       navigate("/");
+      return;
     }
+
+    setLoggedInUserRoleName(storedRoleName);
+    setLoggedInUserRoleId(parseInt(storedRoleId, 10));
+    console.log("User role:", storedRoleName);
   }, [navigate]);
 
   // Fetch active or deleted users based on `showBlocked` state
@@ -82,25 +91,6 @@ const UserManagement = () => {
 
     if (value.trim() === "") {
       fetchUsers(); // Reset users if input is cleared
-    }
-  };
-
-  // Handle role filter
-  const handleRoleChange = async (event) => {
-    const role = event.target.value;
-    setSelectedRole(role);
-    if (role) {
-      try {
-        setLoading(true);
-        const usersByRole = await getUsersByRole(role);
-        setUsers(usersByRole);
-      } catch (error) {
-        setError("Failed to filter users by role.");
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      fetchUsers(); // Fetch all users if no role is selected
     }
   };
 
@@ -159,20 +149,22 @@ const UserManagement = () => {
             </Button>
           </Flex>
 
+          {loggedInUserRoleName === "Super Admin" && (
+            <Flex mb={4} alignItems="center">
+              <Select
+                placeholder="Filter by Role"
+                width="200px"
+                color="blue.700"
+                borderColor="blue.400"
+              >
+                <option value="1">Super Admin</option>
+                <option value="2">Admin</option>
+                <option value="3">Customer</option>
+              </Select>
+            </Flex>
+          )}
+
           <Flex mb={4} alignItems="center">
-            <Select
-              placeholder="Filter by Role"
-              onChange={handleRoleChange}
-              value={selectedRole}
-              mr={4}
-              width="200px"
-              color="blue.700"
-              borderColor="blue.400"
-            >
-              <option value="1">Role 1</option>
-              <option value="2">Role 2</option>
-              <option value="3">Role 3</option>
-            </Select>
             <Button
               onClick={toggleBlockedUsers}
               bg="transparent"
@@ -227,14 +219,18 @@ const UserManagement = () => {
                             >
                               Update
                             </Button>
-                            <Button
-                              colorScheme="red"
-                              size="sm"
-                              ml={2}
-                              onClick={() => handleDelete(user.id)}
-                            >
-                              Delete
-                            </Button>
+                            {loggedInUserRoleName === "Super Admin" ||
+                            (loggedInUserRoleName === "Admin" &&
+                              user.Role?.name === "Customer") ? (
+                              <Button
+                                colorScheme="red"
+                                size="sm"
+                                ml={2}
+                                onClick={() => handleDelete(user.id)}
+                              >
+                                Delete
+                              </Button>
+                            ) : null}
                           </>
                         )}
                       </Td>

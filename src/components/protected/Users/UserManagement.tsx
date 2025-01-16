@@ -17,17 +17,10 @@ import {
   Button,
   Input,
 } from "@chakra-ui/react";
-import {
-  getAllUsers,
-  getUsersByRole,
-  deleteUser,
-  showAllDeletedUsers,
-  undeleteUser,
-} from "../../../service/apiclient";
+import { getUsers, getUsersByRole, deleteUser, undeleteUser, showAllDeletedUsers } from "../../../service/apiclient";
 
 const UserManagement = () => {
-  const [allUsers, setAllUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -45,35 +38,40 @@ const UserManagement = () => {
     }
   }, [navigate]);
 
-  // Fetch users
-  const fetchAllUsers = async () => {
+  // Fetch active or deleted users based on `showBlocked` state
+  const fetchUsers = async () => {
     try {
       setLoading(true);
-      const usersData = showBlocked
-        ? await showAllDeletedUsers()
-        : await getAllUsers();
-      setAllUsers(usersData);
-      setFilteredUsers(usersData);
-      setLoading(false);
+      const offset = (currentPage - 1) * usersPerPage;
+
+      let usersData;
+      if (showBlocked) {
+        usersData = await showAllDeletedUsers(usersPerPage, offset);
+      } else {
+        usersData = await getUsers(usersPerPage, offset);
+      }
+
+      setUsers(usersData);
     } catch (error) {
       setError("Failed to fetch users.");
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAllUsers();
-  }, [showBlocked]);
+    fetchUsers(); // Fetch users whenever the page or showBlocked changes
+  }, [currentPage, showBlocked]);
 
   // Handle search
   const handleSearch = () => {
     if (searchTerm.trim() === "") {
-      setFilteredUsers(allUsers);
+      fetchUsers(); // Reset users if search is cleared
     } else {
-      const filtered = allUsers.filter((user) =>
+      const filtered = users.filter((user) =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      setFilteredUsers(filtered);
+      setUsers(filtered);
     }
     setCurrentPage(1); // Reset to the first page
   };
@@ -83,8 +81,7 @@ const UserManagement = () => {
     setSearchTerm(value);
 
     if (value.trim() === "") {
-      setFilteredUsers(allUsers);
-      setCurrentPage(1); // Reset to the first page
+      fetchUsers(); // Reset users if input is cleared
     }
   };
 
@@ -96,24 +93,16 @@ const UserManagement = () => {
       try {
         setLoading(true);
         const usersByRole = await getUsersByRole(role);
-        setAllUsers(usersByRole);
-        setFilteredUsers(usersByRole);
-        setLoading(false);
+        setUsers(usersByRole);
       } catch (error) {
         setError("Failed to filter users by role.");
+      } finally {
         setLoading(false);
       }
     } else {
-      fetchAllUsers();
+      fetchUsers(); // Fetch all users if no role is selected
     }
   };
-
-  // Pagination logic
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const paginatedUsers = filteredUsers.slice(
-    startIndex,
-    startIndex + usersPerPage
-  );
 
   const goToNextPage = () => setCurrentPage((prev) => prev + 1);
   const goToPreviousPage = () => setCurrentPage((prev) => (prev > 1 ? prev - 1 : 1));
@@ -121,8 +110,7 @@ const UserManagement = () => {
   const handleDelete = async (id) => {
     try {
       await deleteUser(id);
-      setAllUsers((prev) => prev.filter((user) => user.id !== id));
-      setFilteredUsers((prev) => prev.filter((user) => user.id !== id));
+      setUsers((prev) => prev.filter((user) => user.id !== id));
     } catch (error) {
       console.error("Error deleting user:", error);
     }
@@ -131,8 +119,7 @@ const UserManagement = () => {
   const handleUndelete = async (id) => {
     try {
       await undeleteUser(id);
-      setAllUsers((prev) => prev.filter((user) => user.id !== id));
-      setFilteredUsers((prev) => prev.filter((user) => user.id !== id));
+      setUsers((prev) => prev.filter((user) => user.id !== id));
     } catch (error) {
       console.error("Error undeleting user:", error);
     }
@@ -216,7 +203,7 @@ const UserManagement = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {paginatedUsers.map((user) => (
+                  {users.map((user) => (
                     <Tr key={user.id}>
                       <Td color="black">{user.id}</Td>
                       <Td color="black">{user.name}</Td>
@@ -269,7 +256,6 @@ const UserManagement = () => {
             </Button>
             <Button
               onClick={goToNextPage}
-              isDisabled={startIndex + usersPerPage >= filteredUsers.length}
               colorScheme="blue"
             >
               Next

@@ -64,22 +64,19 @@ const getAuthToken = (): string => {
   return authToken;
 };
 
-export const getAllUsers = async () => {
+export const getUsers = async (max, offset) => {
   try {
     const authToken = getAuthToken();
-
-    const response = await axios.get(`${API_URL}/users`, {
-      headers: {
-        Authorization: `Bearer ${authToken}`,
-      },
+    const response = await axios.get(`${API_URL}/users/${max}/${offset}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
     });
-
     return response.data;
   } catch (error) {
     console.error('Error fetching users:', error);
     throw error;
   }
 };
+
 
 export const getOneUser = async ({ id }) => {
   try {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Flex,
+  Grid,
   Box,
   Table,
   Thead,
@@ -12,10 +12,11 @@ import {
   TableContainer,
   Spinner,
   Text,
-  Heading,
+  Flex,
   Button,
   Input,
   Select,
+  Heading,
 } from "@chakra-ui/react";
 import { getUsers, deleteUser, undeleteUser, showAllDeletedUsers } from "../../../service/apiclient";
 
@@ -26,8 +27,9 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [showBlocked, setShowBlocked] = useState(false);
-  const [loggedInUserRoleName, setLoggedInUserRoleName] = useState(null); // Store the logged-in user's role name
-  const [loggedInUserRoleId, setLoggedInUserRoleId] = useState(null); // Store the logged-in user's role ID
+  const [loggedInUserRoleName, setLoggedInUserRoleName] = useState(null);
+  const [loggedInUserRoleId, setLoggedInUserRoleId] = useState(null);
+  const [filterRoleFk, setFilterRoleFk] = useState(null); // New state for role filtering
   const navigate = useNavigate();
   const usersPerPage = 25;
 
@@ -44,10 +46,9 @@ const UserManagement = () => {
 
     setLoggedInUserRoleName(storedRoleName);
     setLoggedInUserRoleId(parseInt(storedRoleId, 10));
-    console.log("User role:", storedRoleName);
   }, [navigate]);
 
-  // Fetch active or deleted users based on `showBlocked` state
+  // Fetch users based on `showBlocked` and `filterRoleFk` state
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -60,6 +61,11 @@ const UserManagement = () => {
         usersData = await getUsers(usersPerPage, offset);
       }
 
+      // Apply role filtering for "Super Admin"
+      if (loggedInUserRoleName === "Super Admin" && filterRoleFk) {
+        usersData = usersData.filter((user) => user.role_fk === parseInt(filterRoleFk, 10));
+      }
+
       setUsers(usersData);
     } catch (error) {
       setError("Failed to fetch users.");
@@ -69,20 +75,25 @@ const UserManagement = () => {
   };
 
   useEffect(() => {
-    fetchUsers(); // Fetch users whenever the page or showBlocked changes
-  }, [currentPage, showBlocked]);
+    fetchUsers();
+  }, [currentPage, showBlocked, filterRoleFk]); // Fetch users whenever these change
 
-  // Handle search
+  const handleRoleFilterChange = (e) => {
+    const value = e.target.value;
+    setFilterRoleFk(value);
+    setCurrentPage(1); // Reset to the first page
+  };
+
   const handleSearch = () => {
     if (searchTerm.trim() === "") {
-      fetchUsers(); // Reset users if search is cleared
+      fetchUsers();
     } else {
       const filtered = users.filter((user) =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setUsers(filtered);
     }
-    setCurrentPage(1); // Reset to the first page
+    setCurrentPage(1);
   };
 
   const handleInputChange = (e) => {
@@ -90,7 +101,7 @@ const UserManagement = () => {
     setSearchTerm(value);
 
     if (value.trim() === "") {
-      fetchUsers(); // Reset users if input is cleared
+      fetchUsers();
     }
   };
 
@@ -117,154 +128,168 @@ const UserManagement = () => {
 
   const toggleBlockedUsers = () => {
     setShowBlocked((prev) => !prev);
-    setCurrentPage(1); // Reset to the first page
+    setCurrentPage(1);
   };
 
   return (
-    <Flex minHeight="100vh" direction="column" mt={90}>
-      <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" p={4} bg="white">
-        <Box maxWidth="80%" width="100%" mx="auto">
-          <Heading as="h1" size="lg" mb={4} textAlign="center" color="blue.600">
-            User Management
-          </Heading>
+    <Grid
+      minHeight="100vh"
+      templateColumns="1fr"
+      alignItems="center"
+      justifyContent="center"
+      bg="white"
+      color="gray.800"
+      width="100vw"
+      pt={12} // Same as Dashboard component
+    >
+      <Box
+        width="100%"
+        maxW="1200px" // Same max width as Dashboard
+        p={8}
+        boxShadow="lg"
+        borderRadius="md"
+        bg="white"
+        textAlign="center"
+        margin="0 auto"
+      >
+        <Heading as="h1" size="lg" mb={6} color="blue.500">
+          User Management
+        </Heading>
 
-          {/* Search bar */}
-          <Flex justifyContent="center" alignItems="center" mb={4}>
-            <Box width="70%">
-              <Input
-                placeholder="Search users by name..."
-                value={searchTerm}
-                onChange={handleInputChange}
-                width="100%"
-                border="2px solid"
-                borderColor="blue.600"
-                borderRadius="full"
-                focusBorderColor="blue.400"
-                _placeholder={{ color: "blue.400" }}
-                textColor="black"
-              />
-            </Box>
-            <Button onClick={handleSearch} colorScheme="blue" ml={2}>
-              Search
-            </Button>
-          </Flex>
+        {/* Search bar */}
+        <Flex justifyContent="center" alignItems="center" mb={4}>
+          <Box width="70%">
+            <Input
+              placeholder="Search users by name..."
+              value={searchTerm}
+              onChange={handleInputChange}
+              width="100%"
+              border="2px solid"
+              borderColor="blue.600"
+              borderRadius="full"
+              focusBorderColor="blue.400"
+              _placeholder={{ color: "blue.400" }}
+              textColor="black"
+            />
+          </Box>
+          <Button onClick={handleSearch} colorScheme="blue" ml={2}>
+            Search
+          </Button>
+        </Flex>
 
-          {loggedInUserRoleName === "Super Admin" && (
-            <Flex mb={4} alignItems="center">
-              <Select
-                placeholder="Filter by Role"
-                width="200px"
-                color="blue.700"
-                borderColor="blue.400"
-              >
-                <option value="1">Super Admin</option>
-                <option value="2">Admin</option>
-                <option value="3">Customer</option>
-              </Select>
-            </Flex>
-          )}
-
-          <Flex mb={4} alignItems="center">
-            <Button
-              onClick={toggleBlockedUsers}
-              bg="transparent"
-              border="1px solid black"
-              color="black"
-              _hover={{ bg: "gray.100" }}
+        {loggedInUserRoleName === "Super Admin" && (
+          <Flex justifyContent="center" mb={4}>
+            <Select
+              placeholder="Filter by Role"
+              width="200px"
+              color="blue.700"
+              borderColor="blue.400"
+              onChange={handleRoleFilterChange}
             >
-              {showBlocked ? "Back to All Users" : "Show Blocked Users"}
-            </Button>
+              <option value="1">Super Admin</option>
+              <option value="2">Admin</option>
+              <option value="3">Customer</option>
+            </Select>
           </Flex>
+        )}
 
-          {loading ? (
-            <Spinner size="xl" color="blue.500" />
-          ) : error ? (
-            <Text color="red.500" textAlign="center" mb={4}>
-              {error}
-            </Text>
-          ) : (
-            <TableContainer>
-              <Table variant="striped" colorScheme="blue">
-                <Thead>
-                  <Tr>
-                    <Th>ID</Th>
-                    <Th>Name</Th>
-                    <Th>Email</Th>
-                    <Th>Role</Th>
-                    <Th>Actions</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {users.map((user) => (
-                    <Tr key={user.id}>
-                      <Td color="black">{user.id}</Td>
-                      <Td color="black">{user.name}</Td>
-                      <Td color="black">{user.email}</Td>
-                      <Td color="black">{user.Role?.name || "Unknown"}</Td>
-                      <Td>
-                        {showBlocked ? (
-                          <Button
-                            colorScheme="green"
-                            size="sm"
-                            onClick={() => handleUndelete(user.id)}
-                          >
-                            Undelete
-                          </Button>
-                        ) : (
-                          <>
-                          {loggedInUserRoleName === "Super Admin" ||
-                            (loggedInUserRoleName === "Admin" &&
-                              user.Role?.name === "Customer") ? (
-                            <Button
-                              colorScheme="blue"
-                              size="sm"
-                              onClick={() => navigate(`/update/user/${user.id}`)}
-                            >
-                              Update
-                            </Button>
-                            ) : null}
+        <Flex justifyContent="center" mb={4}>
+          <Button
+            onClick={toggleBlockedUsers}
+            bg="transparent"
+            border="1px solid black"
+            color="black"
+            _hover={{ bg: "gray.100" }}
+          >
+            {showBlocked ? "Back to All Users" : "Show Blocked Users"}
+          </Button>
+        </Flex>
 
-                            {loggedInUserRoleName === "Super Admin" ||
+        {loading ? (
+          <Spinner size="xl" color="blue.500" />
+        ) : error ? (
+          <Text color="red.500" textAlign="center" mb={4}>
+            {error}
+          </Text>
+        ) : (
+          <TableContainer mt={4} bg="blue.50" borderRadius="md" boxShadow="md">
+            <Table variant="striped" colorScheme="blue" width="100%">
+              <Thead>
+                <Tr>
+                  <Th>ID</Th>
+                  <Th>Name</Th>
+                  <Th>Email</Th>
+                  <Th>Role</Th>
+                  <Th>Actions</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {users.map((user) => (
+                  <Tr key={user.id}>
+                    <Td>{user.id}</Td>
+                    <Td>{user.name}</Td>
+                    <Td>{user.email}</Td>
+                    <Td>{user.Role?.name || "Unknown"}</Td>
+                    <Td>
+                      {showBlocked ? (
+                        <Button
+                          colorScheme="green"
+                          size="sm"
+                          onClick={() => handleUndelete(user.id)}
+                        >
+                          Undelete
+                        </Button>
+                      ) : (
+                        <>
+                          {(loggedInUserRoleName === "Super Admin" ||
                             (loggedInUserRoleName === "Admin" &&
-                              user.Role?.name === "Customer") ? (
+                              user.Role?.name === "Customer")) && (
+                            <>
+                              <Button
+                                colorScheme="blue"
+                                size="sm"
+                                onClick={() => navigate(`/update/user/${user.id}`)}
+                                mr={2}
+                              >
+                                Update
+                              </Button>
                               <Button
                                 colorScheme="red"
                                 size="sm"
-                                ml={2}
                                 onClick={() => handleDelete(user.id)}
                               >
                                 Delete
                               </Button>
-                            ) : null}
-                          </>
-                        )}
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
-          )}
+                            </>
+                          )}
+                        </>
+                      )}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        )}
 
-          <Flex justifyContent="center" mt={4}>
-            <Button
-              onClick={goToPreviousPage}
-              isDisabled={currentPage === 1}
-              colorScheme="blue"
-              mr={4}
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={goToNextPage}
-              colorScheme="blue"
-            >
-              Next
-            </Button>
-          </Flex>
-        </Box>
+        <Flex justifyContent="center" mt={4}>
+          <Button
+            onClick={goToPreviousPage}
+            isDisabled={currentPage === 1}
+            colorScheme="blue"
+            mr={4}
+          >
+            Previous
+          </Button>
+          <Button
+            onClick={goToNextPage}
+            colorScheme="blue"
+          >
+            Next
+          </Button>
+        </Flex>
       </Box>
-    </Flex>
+    </Grid>
   );
 };
 

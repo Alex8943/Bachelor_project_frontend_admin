@@ -64,18 +64,6 @@ const getAuthToken = (): string => {
   return authToken;
 };
 
-export const getUsers = async (max, offset) => {
-  try {
-    const authToken = getAuthToken();
-    const response = await axios.get(`${API_URL}/users/${max}/${offset}`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    throw error;
-  }
-};
 
 
 export const getOneUser = async ({ id }) => {
@@ -312,11 +300,24 @@ export const getOneReview = async (id: number) => {
 };
 
 
-export const getRangeOfReviews = async (max: number) => {
+export const getUsers = async (max, offset) => {
   try {
     const authToken = getAuthToken();
-    const response = await axios.get(`${SEVENTH_API_URL}/reviews/${max}`, {
+    const response = await axios.get(`${API_URL}/users/${max}/${offset}`, {
       headers: { Authorization: `Bearer ${authToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};
+
+export const getRangeOfReviews = async (max: number, offset: number) => {
+  try {
+    const authToken = getAuthToken();
+    const response = await axios.get(`${SEVENTH_API_URL}/reviews/${max}/${offset}`, {
+      headers: { Authorization: `Bearer ${authToken}`},
     });
     return response.data;
   } catch (error) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Grid,
   Box,
@@ -227,7 +227,14 @@ const UserManagement = () => {
                 {users.map((user) => (
                   <Tr key={user.id}>
                     <Td>{user.id}</Td>
-                    <Td>{user.name}</Td>
+                    <Td>
+                      <Link
+                        to={`/user/${user.id}`}
+                        style={{ color: "blue", textDecoration: "underline" }}
+                      >
+                        {user.name}
+                      </Link>
+                    </Td>
                     <Td>{user.email}</Td>
                     <Td>{user.Role?.name || "Unknown"}</Td>
                     <Td>

@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Heading, Text, Spinner, Alert, AlertIcon, VStack } from '@chakra-ui/react';
+import {
+  Grid,
+  Box,
+  Heading,
+  Text,
+  Spinner,
+  Alert,
+  AlertIcon,
+  VStack,
+} from '@chakra-ui/react';
 import { getOneReview } from '../../../service/apiclient';
 import Sidebar from '../burgermenu/Sidebar';
 
@@ -35,54 +44,90 @@ const ReviewDetails = () => {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bg="gray.50">
+      <Box
+        minHeight="100vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        bg="white"
+        width="100vw"
+      >
         <Spinner size="xl" color="blue.500" />
       </Box>
     );
   }
-
+  
   if (error) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" bg="gray.50">
-        <Alert status="error" maxW="400px" boxShadow="md" borderRadius="md" color="black">
-          <AlertIcon color="black" />
+      <Box
+        minHeight="100vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        bg="white"
+        width="100vw"
+      >
+        <Alert status="error" maxW="400px" boxShadow="md" borderRadius="md">
+          <AlertIcon />
           {error}
         </Alert>
       </Box>
     );
   }
+  
+  
 
   return (
-    <Box minHeight="100vh" display="flex" justifyContent="center" alignItems="center" p={4} bg={"white"}>
-      <Box width="100%" maxW="500px" p={8} boxShadow="md" borderRadius="md" bg="white" marginRight="350px" marginLeft="700px">
-        <Heading as="h1" size="lg" mb={6} color="black" textAlign="center">
+    <Grid
+      minHeight="100vh"
+      templateColumns="1fr"
+      alignItems="center"
+      justifyContent="center"
+      bg="white"
+      color="gray.800"
+      width="100vw"
+      pt={12}
+    >
+      <Box
+        width="100%"
+        maxW="1200px"
+        p={8}
+        boxShadow="lg"
+        borderRadius="md"
+        bg="white"
+        textAlign="center"
+        margin="0 auto"
+      >
+        <Heading as="h1" size="lg" mb={6} color="blue.500">
           Review Details
         </Heading>
         <Sidebar />
-        {review ? (
-          <VStack align="start" spacing={4}>
-            <Text color="black"><strong>ID:</strong> {review.id}</Text>
-            <Text color="black"><strong>Title:</strong> {review.title}</Text>
-            <Text color="black"><strong>Description:</strong> {review.description}</Text>
-            <Text color="black"><strong>Media:</strong> {review.media?.name || 'Unknown'}</Text>
-            <Text color="black">
-              <strong>Platform:</strong>{" "}
-              <a href={review.platform.link} target="_blank" rel="noopener noreferrer">
-                {review.platform.link}
-              </a>
-            </Text>
-            <Text color="black"><strong>User:</strong> {review.user ? `${review.user.name} ${review.user.lastname}` : 'Unknown'}</Text>
-            <Text color="black"><strong>Created At:</strong> {new Date(review.createdAt).toLocaleDateString()}</Text>
-            <Text color="black"><strong>Updated At:</strong> {new Date(review.updatedAt).toLocaleDateString()}</Text>
-            {review.genres && review.genres.length > 0 && (
-              <Text color="black"><strong>Genres:</strong> {review.genres.map((genre) => genre.name).join(', ')}</Text>
-            )}
-          </VStack>
-        ) : (
-          <Text color="black">No review data available.</Text>
-        )}
+        <Box>
+          {review ? (
+            <VStack align="start" spacing={4}>
+              <Text><strong>ID:</strong> {review.id}</Text>
+              <Text><strong>Title:</strong> {review.title}</Text>
+              <Text><strong>Description:</strong> {review.description}</Text>
+              <Text><strong>Media:</strong> {review.media?.name || 'Unknown'}</Text>
+              <Text>
+                <strong>Platform:</strong>{' '}
+                <a href={review.platform?.link} target="_blank" rel="noopener noreferrer">
+                  {review.platform?.link || 'Unknown'}
+                </a>
+              </Text>
+              <Text><strong>User:</strong> {review.user ? `${review.user.name} ${review.user.lastname}` : 'Unknown'}</Text>
+              <Text><strong>Created At:</strong> {new Date(review.createdAt).toLocaleDateString()}</Text>
+              <Text><strong>Updated At:</strong> {new Date(review.updatedAt).toLocaleDateString()}</Text>
+              {review.genres && review.genres.length > 0 && (
+                <Text><strong>Genres:</strong> {review.genres.map((genre) => genre.name).join(', ')}</Text>
+              )}
+            </VStack>
+          ) : (
+            <Text>No review data available.</Text>
+          )}
+        </Box>
       </Box>
-    </Box>
+    </Grid>
   );
 };
 

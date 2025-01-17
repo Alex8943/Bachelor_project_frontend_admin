@@ -226,7 +226,19 @@ const Dashboard = () => {
                         </Link>
                       </Td>
                       <Td>{truncateText(review.description)}</Td>
-                      <Td>{users[review.user_fk] || "Unknown"}</Td>
+                      <Td>
+                        {review.user ? (
+                          <Link
+                            to={`/user/${review.user.id}`}
+                            style={{ color: "black"}}
+                          >
+                            {review.user.name || "Unknown"}
+                          </Link>
+                        ) : (
+                          "Unknown"
+                        )}
+                      </Td>
+
                       <Td>{new Date(review.updatedAt).toLocaleDateString()}</Td>
                       <Td>
                         {showDeleted ? (

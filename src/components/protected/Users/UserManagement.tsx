@@ -230,7 +230,7 @@ const UserManagement = () => {
                     <Td>
                       <Link
                         to={`/user/${user.id}`}
-                        style={{ color: "blue", textDecoration: "underline" }}
+                        style={{ color: "black", textDecoration: "underline" }}
                       >
                         {user.name}
                       </Link>

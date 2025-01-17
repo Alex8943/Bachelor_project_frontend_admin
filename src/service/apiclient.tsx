@@ -105,6 +105,8 @@ export const getAllReviewsByUser = async (id: number) => {
   }
 };
 
+/*
+deleted
 export const getUsersByRole = async (role_fk: number) => {
   try {
     const authToken = getAuthToken();
@@ -117,6 +119,7 @@ export const getUsersByRole = async (role_fk: number) => {
     throw error;
   }
 };
+*/
 
 export const getRoles = async () => {
   try {

@@ -212,6 +212,9 @@ const UserManagement = () => {
                           </Button>
                         ) : (
                           <>
+                          {loggedInUserRoleName === "Super Admin" ||
+                            (loggedInUserRoleName === "Admin" &&
+                              user.Role?.name === "Customer") ? (
                             <Button
                               colorScheme="blue"
                               size="sm"
@@ -219,6 +222,8 @@ const UserManagement = () => {
                             >
                               Update
                             </Button>
+                            ) : null}
+
                             {loggedInUserRoleName === "Super Admin" ||
                             (loggedInUserRoleName === "Admin" &&
                               user.Role?.name === "Customer") ? (

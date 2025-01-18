@@ -135,39 +135,42 @@ const Dashboard = () => {
   const handleUndelete = async (id) => {
     try {
       await undeleteReview(id);
-      fetchReviews(); // Refetch reviews after undeleting
+      setReviews((prevReviews) =>
+        // Remove the undeleted review from state
+        prevReviews.filter((review) => review.id !== id)
+      );
     } catch (error) {
       console.error("Error undeleting review:", error);
     }
   };
 
   return (
-  <Grid
-    minHeight="100vh"
-    templateColumns="1fr"
-    alignItems="center"
-    justifyContent="center"
-    bg="white" // Ensure white background
-    color="gray.800"
-    width="100%" // Full width
-    pt={20}
-    marginRight="680px"
-    >
-    <Box
-       width="100%"
-       maxW="1300px"
-       p={8}
-       boxShadow="lg"
-       borderRadius="md"
-       bg="white"
-       textAlign="center"
-       margin="0 auto"
-    >
+    <Grid
+      minHeight="100vh"
+      templateColumns="1fr"
+      alignItems="center"
+      justifyContent="center"
+      bg="white" // Ensure white background
+      color="gray.800"
+      width="100%" // Full width
+      pt={12}
+      marginRight="680px"
+      marginTop={20}
+      >
+      <Box
+         width="100%"
+         maxW="1500px"
+         p={8}
+         boxShadow="lg"
+         borderRadius="md"
+         bg="white"
+         textAlign="center"
+         margin="0 auto"
+      >
         <Heading as="h1" size="lg" mb={6} color="blue.500">
           Review Dashboard
         </Heading>
-  
-        {/* Search bar */}
+
         <Flex justifyContent="center" alignItems="center" mb={4}>
           <Box width="70%">
             <Input
@@ -187,45 +190,41 @@ const Dashboard = () => {
             Search
           </Button>
         </Flex>
-  
+
         <Flex justifyContent="center" mb={4}>
-          <Button
-            colorScheme="gray"
-            onClick={toggleDeletedReviews}
-            textColor="black"
-          >
+          <Button colorScheme="gray" onClick={toggleDeletedReviews} textColor="black">
             {showDeleted ? "Back to all reviews" : "Show deleted reviews"}
           </Button>
         </Flex>
-  
+
         {loading ? (
           <Spinner size="xl" color="blue.500" />
         ) : error ? (
-          <Text color="red.500" textAlign="center">{error}</Text>
+          <Text color="red.500" textAlign="center">
+            {error}
+          </Text>
         ) : (
           <>
-            <TableContainer 
-              mt={4} 
-              bg="blue.50" 
-              borderRadius="md" 
-              boxShadow="md"
-              width="100%" // Ensures the table spans the entire container
+            <Box
+              overflowX="auto"
+              border="1px solid"
+              borderColor="blue.200"
+              borderRadius="md"
             >
-              <Table variant="striped" colorScheme="blue">
-                <Thead>
-                  <Tr>
-                    <Th>ID</Th>
-                    <Th>Title</Th>
-                    <Th>Content</Th>
-                    <Th>Created by</Th>
-                    <Th>Updated</Th>
-                    <Th>Actions</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {reviews
-                    .filter((review) => review) // Filter out null or undefined items
-                    .map((review) => (
+              <TableContainer>
+                <Table variant="striped" colorScheme="blue">
+                  <Thead>
+                    <Tr>
+                      <Th>ID</Th>
+                      <Th>Title</Th>
+                      <Th>Content</Th>
+                      <Th>Created by</Th>
+                      <Th>Updated</Th>
+                      <Th>Actions</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {reviews.map((review) => (
                       <Tr key={review.id}>
                         <Td>{review.id}</Td>
                         <Td>
@@ -238,18 +237,11 @@ const Dashboard = () => {
                         </Td>
                         <Td>{truncateText(review.description)}</Td>
                         <Td>
-                          {review.user ? (
-                            <Link
-                              to={`/user/${review.user.id}`}
-                              style={{ color: "black" }}
-                            >
-                              {review.user.name || "Unknown"}
-                            </Link>
-                          ) : (
-                            "Unknown"
-                          )}
+                          {users[review.user_fk] || "Unknown"}
                         </Td>
-                        <Td>{new Date(review.updatedAt).toLocaleDateString()}</Td>
+                        <Td>
+                          {new Date(review.updatedAt).toLocaleDateString()}
+                        </Td>
                         <Td>
                           {showDeleted ? (
                             <Button
@@ -281,11 +273,11 @@ const Dashboard = () => {
                         </Td>
                       </Tr>
                     ))}
-                </Tbody>
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
 
-              </Table>
-            </TableContainer>
-  
             <Flex justifyContent="center" mt={4}>
               <Button
                 onClick={goToPreviousPage}
@@ -308,6 +300,6 @@ const Dashboard = () => {
       </Box>
     </Grid>
   );
-}  
+};
 
 export default Dashboard;

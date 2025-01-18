@@ -139,8 +139,10 @@ const UserManagement = () => {
       justifyContent="center"
       bg="white"
       color="gray.800"
-      width="100vw"
-      pt={12} // Same as Dashboard component
+      width="100%"
+      pt={12}
+      marginRight="1070px"
+
     >
       <Box
         width="100%"

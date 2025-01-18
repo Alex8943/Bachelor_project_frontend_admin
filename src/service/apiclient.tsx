@@ -229,7 +229,7 @@ export const topGenres = async () => {
 };
 
 
-//Reviews services
+
 export const showAllDeletedReviews = async () => {
   try {
     const authToken = getAuthToken();

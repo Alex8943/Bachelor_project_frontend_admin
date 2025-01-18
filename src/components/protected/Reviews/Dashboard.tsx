@@ -36,27 +36,32 @@ const Dashboard = () => {
   const reviewsPerPage = 25;
   const navigate = useNavigate();
 
-  // Fetch reviews from the backend based on current page and showDeleted status
   const fetchReviews = async () => {
     try {
       setLoading(true);
       const offset = (currentPage - 1) * reviewsPerPage;
-
+  
       let data;
       if (showDeleted) {
-        data = await showAllDeletedReviews(reviewsPerPage, offset);
+        data = await showAllDeletedReviews();
       } else {
         data = await getRangeOfReviews(reviewsPerPage, offset);
       }
-
-      console.log("Fetched reiews pr. page: ", data);
-      setReviews(data);
+  
+      // Ensure all items in `data` are valid
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid data format received from API");
+      }
+  
+      // Filter out invalid objects
+      setReviews(data.filter((review) => review && review.id));
     } catch (err) {
       setError("Failed to load reviews.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     fetchReviews();
@@ -117,12 +122,15 @@ const Dashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteReview(id);
-      fetchReviews(); // Refetch reviews after deletion
+      await deleteReview(id); // Send delete request to the server
+      setReviews((prevReviews) =>
+        prevReviews.filter((review) => review.id !== id) // Remove the deleted review from state
+      );
     } catch (error) {
       console.error("Error deleting review:", error);
     }
   };
+  
 
   const handleUndelete = async (id) => {
     try {
@@ -134,26 +142,27 @@ const Dashboard = () => {
   };
 
   return (
-    <Grid
-      minHeight="100vh"
-      templateColumns="1fr"
-      alignItems="center"
-      justifyContent="center"
-      bg="white"
-      color="gray.800"
-      width="100vw"
-      pt={20}
+  <Grid
+    minHeight="100vh"
+    templateColumns="1fr"
+    alignItems="center"
+    justifyContent="center"
+    bg="white" // Ensure white background
+    color="gray.800"
+    width="100%" // Full width
+    pt={20}
+    marginRight="680px"
     >
-      <Box
-        width="100%"
-        maxW="1300px"
-        p={8}
-        boxShadow="lg"
-        borderRadius="md"
-        bg="white"
-        textAlign="center"
-        margin="0 auto"
-      >
+    <Box
+       width="100%"
+       maxW="1300px"
+       p={8}
+       boxShadow="lg"
+       borderRadius="md"
+       bg="white"
+       textAlign="center"
+       margin="0 auto"
+    >
         <Heading as="h1" size="lg" mb={6} color="blue.500">
           Review Dashboard
         </Heading>
@@ -214,64 +223,66 @@ const Dashboard = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {reviews.map((review) => (
-                    <Tr key={review.id}>
-                      <Td>{review.id}</Td>
-                      <Td>
-                        <Link
-                          to={`/review/${review.id}`}
-                          style={{ color: "black", textDecoration: "underline" }}
-                        >
-                          {review.title}
-                        </Link>
-                      </Td>
-                      <Td>{truncateText(review.description)}</Td>
-                      <Td>
-                        {review.user ? (
+                  {reviews
+                    .filter((review) => review) // Filter out null or undefined items
+                    .map((review) => (
+                      <Tr key={review.id}>
+                        <Td>{review.id}</Td>
+                        <Td>
                           <Link
-                            to={`/user/${review.user.id}`}
-                            style={{ color: "black"}}
+                            to={`/review/${review.id}`}
+                            style={{ color: "black", textDecoration: "underline" }}
                           >
-                            {review.user.name || "Unknown"}
+                            {review.title}
                           </Link>
-                        ) : (
-                          "Unknown"
-                        )}
-                      </Td>
-
-                      <Td>{new Date(review.updatedAt).toLocaleDateString()}</Td>
-                      <Td>
-                        {showDeleted ? (
-                          <Button
-                            colorScheme="green"
-                            size="sm"
-                            onClick={() => handleUndelete(review.id)}
-                          >
-                            Undelete
-                          </Button>
-                        ) : (
-                          <>
-                            <Button
-                              colorScheme="blue"
-                              size="sm"
-                              onClick={() => navigate(`/update/review/${review.id}`)}
-                              mr={2}
+                        </Td>
+                        <Td>{truncateText(review.description)}</Td>
+                        <Td>
+                          {review.user ? (
+                            <Link
+                              to={`/user/${review.user.id}`}
+                              style={{ color: "black" }}
                             >
-                              Edit
-                            </Button>
+                              {review.user.name || "Unknown"}
+                            </Link>
+                          ) : (
+                            "Unknown"
+                          )}
+                        </Td>
+                        <Td>{new Date(review.updatedAt).toLocaleDateString()}</Td>
+                        <Td>
+                          {showDeleted ? (
                             <Button
-                              colorScheme="red"
+                              colorScheme="green"
                               size="sm"
-                              onClick={() => handleDelete(review.id)}
+                              onClick={() => handleUndelete(review.id)}
                             >
-                              Delete
+                              Undelete
                             </Button>
-                          </>
-                        )}
-                      </Td>
-                    </Tr>
-                  ))}
+                          ) : (
+                            <>
+                              <Button
+                                colorScheme="blue"
+                                size="sm"
+                                onClick={() => navigate(`/update/review/${review.id}`)}
+                                mr={2}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                colorScheme="red"
+                                size="sm"
+                                onClick={() => handleDelete(review.id)}
+                              >
+                                Delete
+                              </Button>
+                            </>
+                          )}
+                        </Td>
+                      </Tr>
+                    ))}
                 </Tbody>
+
               </Table>
             </TableContainer>
   

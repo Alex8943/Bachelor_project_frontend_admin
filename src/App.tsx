@@ -18,6 +18,7 @@ import RealTimeUpdates from './components/protected/RealTimeUpdates';
 import CreateReview from './components/protected/Reviews/CreateReview';
 import Footer from './Footer';
 import Policies from './Policies';
+import CreateUser from './components/protected/Users/CreateUser';
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
                 <Route path="/update/user/:id" element={<UpdateUser/>} />
                 <Route path="/sse" element={<RealTimeUpdates />} />
                 <Route path="/create/review" element={<CreateReview />} />
+                <Route path="/create/user" element={<CreateUser />} />
                 
               </Route>
             </Routes>

@@ -179,6 +179,22 @@ const UserManagement = () => {
           </Button>
         </Flex>
 
+        {/* Create user button */}
+        {(loggedInUserRoleName === "Super Admin" ||
+          (loggedInUserRoleName === "Admin" && loggedInUserRoleId === 3)) && (
+          <Flex justifyContent="center" mb={4}>
+            <Button
+              onClick={() => navigate("/create/user")}
+              colorScheme="blue"
+              size="md"
+            >
+              Create User
+            </Button>
+          </Flex>
+        )}
+
+        {/* Role filtering for "Super Admin" */}
+
         {loggedInUserRoleName === "Super Admin" && (
           <Flex justifyContent="center" mb={4}>
             <Select

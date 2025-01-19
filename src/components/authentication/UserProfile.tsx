@@ -9,12 +9,16 @@ const UserProfile = () => {
     const [userEmail, setUserEmail] = useState("");
     const [userRoleName, setUserRoleName] = useState("");
     const [loading, setLoading] = useState(true);
+    const [user_fk, setUser_fk] = useState("");
+    const [userId, setUserId] = useState("");
 
     useEffect(() => {
         const authToken = sessionStorage.getItem("authToken");
         const storedRoleName = sessionStorage.getItem("userRoleName");
         const storedName = sessionStorage.getItem("userName");
         const storedEmail = sessionStorage.getItem("userEmail");
+        const storedUser_fk = sessionStorage.getItem("user_fk");
+        const storedUserId = sessionStorage.getItem("userId");
 
         if (!authToken) {
             navigate("/");
@@ -24,6 +28,9 @@ const UserProfile = () => {
         setUserName(storedName || "");
         setUserEmail(storedEmail || "");
         setUserRoleName(storedRoleName || "");
+        setUser_fk(storedUser_fk || "");
+        setUserId(storedUserId || "");
+        console.log("User: ", storedName, "\n", storedEmail, "\n", storedRoleName, "\n",storedUser_fk, "\n", storedUserId);
         setLoading(false);
     }, [navigate]);
 

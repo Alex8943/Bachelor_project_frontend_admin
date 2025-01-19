@@ -15,6 +15,7 @@ import UserProfile from './components/authentication/UserProfile';
 import UpdateReview from './components/protected/Reviews/UpdateReview';
 import UpdateUser from './components/protected/Users/UpdateUser';
 import RealTimeUpdates from './components/protected/RealTimeUpdates';
+import CreateReview from './components/protected/Reviews/createReview';
 
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
                 <Route path="/update/review/:id" element={<UpdateReview/>} />
                 <Route path="/update/user/:id" element={<UpdateUser/>} />
                 <Route path="/sse" element={<RealTimeUpdates />} />
+                <Route path="/create/review" element={<CreateReview />} />
               </Route>
             </Routes>
             </GridItem>

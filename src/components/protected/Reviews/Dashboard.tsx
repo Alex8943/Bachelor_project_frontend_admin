@@ -196,6 +196,15 @@ const Dashboard = () => {
             {showDeleted ? "Back to all reviews" : "Show deleted reviews"}
           </Button>
         </Flex>
+        <Flex justifyContent="center" mb={4}>
+          <Button
+            colorScheme="blue"
+            onClick={() => navigate("/create/review")}
+          >
+            Create Review
+          </Button>
+
+        </Flex>
 
         {loading ? (
           <Spinner size="xl" color="blue.500" />

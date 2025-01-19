@@ -6,7 +6,7 @@ import { login } from '../../service/apiclient';
 const FrontPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);  // <-- Add loading state
+  const [isLoading, setIsLoading] = useState(false);  // <-- Add loading stat
 
   const navigate = useNavigate();
 
@@ -26,6 +26,7 @@ const FrontPage = () => {
       sessionStorage.setItem('role_fk', response.user.role_fk);
       sessionStorage.setItem('userName', response.user.name);
       sessionStorage.setItem('userEmail', response.user.email);
+      sessionStorage.setItem('userId', response.user.id); // Assuming user.id represents the user_fk
 
       if (response.user.role_fk === 3) {
         setMessage("Customers can't login here");

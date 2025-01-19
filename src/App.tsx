@@ -15,7 +15,7 @@ import UserProfile from './components/authentication/UserProfile';
 import UpdateReview from './components/protected/Reviews/UpdateReview';
 import UpdateUser from './components/protected/Users/UpdateUser';
 import RealTimeUpdates from './components/protected/RealTimeUpdates';
-import CreateReview from './components/protected/Reviews/createReview';
+import CreateReview from './components/protected/Reviews/CreateReview';
 
 
 function App() {

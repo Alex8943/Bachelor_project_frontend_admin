@@ -79,7 +79,7 @@ function SignUp() {
       sessionStorage.setItem('userEmail', response.user.email);
       sessionStorage.setItem('role_fk', response.user.role_fk);
       sessionStorage.setItem('userRoleName', response.user.Role.name);
-      sessionStorage.setItem('user_fk', response.user.id); // Assuming user.id represents the user_fk
+      sessionStorage.setItem('userId', response.user.id); // Assuming user.id represents the user_fk
 
       setMessage('Signup successful!');
       navigate('/profile'); // Redirect to profile page

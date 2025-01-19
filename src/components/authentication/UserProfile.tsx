@@ -28,9 +28,8 @@ const UserProfile = () => {
         setUserName(storedName || "");
         setUserEmail(storedEmail || "");
         setUserRoleName(storedRoleName || "");
-        setUser_fk(storedUser_fk || "");
         setUserId(storedUserId || "");
-        console.log("User: ", storedName, "\n", storedEmail, "\n", storedRoleName, "\n",storedUser_fk, "\n", storedUserId);
+        console.log("User: ", storedName, "\n", storedEmail, "\n", storedRoleName, "\n", storedUserId);
         setLoading(false);
     }, [navigate]);
 

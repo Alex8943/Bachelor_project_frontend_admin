@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, GridItem, Flex } from '@chakra-ui/react';
+import { Grid, GridItem, Flex, Box } from '@chakra-ui/react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './components/AuthContext'; // Ensure the path to AuthContext is correct
 import NavBar from './components/Navbar';
@@ -16,6 +16,8 @@ import UpdateReview from './components/protected/Reviews/UpdateReview';
 import UpdateUser from './components/protected/Users/UpdateUser';
 import RealTimeUpdates from './components/protected/RealTimeUpdates';
 import CreateReview from './components/protected/Reviews/CreateReview';
+import Footer from './Footer';
+import Policies from './Policies';
 
 
 function App() {
@@ -37,7 +39,7 @@ function App() {
             <Routes>
               <Route path="/" element={<FrontPage />} /> 
               <Route path="/signup" element={<SignUp />} />
-
+              <Route path="/policies" element={<Policies />} />
               <Route element={<ProtectedRoute />}>
               
                 <Route path="/dashboard" element={<Dashboard />} />
@@ -50,10 +52,17 @@ function App() {
                 <Route path="/update/user/:id" element={<UpdateUser/>} />
                 <Route path="/sse" element={<RealTimeUpdates />} />
                 <Route path="/create/review" element={<CreateReview />} />
+                
               </Route>
             </Routes>
             </GridItem>
             </Grid>
+            <Box 
+              as="footer" 
+              width="100%"  
+            >
+              <Footer />
+          </Box>
           </Flex>
       </Router>
     </AuthProvider>

@@ -14,25 +14,32 @@ import {
   Button,
   Input,
   Heading,
-  Grid
+  Grid,
+  Select,
 } from "@chakra-ui/react";
-import { 
-  getRangeOfReviews, 
-  getOneUser, 
-  deleteReview, 
-  showAllDeletedReviews, 
-  undeleteReview 
+import {
+  getRangeOfReviews,
+  getOneUser,
+  deleteReview,
+  showAllDeletedReviews,
+  undeleteReview,
+  getAllPlatforms,
 } from "../../../service/apiclient";
 import { Link, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [reviews, setReviews] = useState([]);
+  const [allReviews, setAllReviews] = useState([]); // Original dataset
   const [users, setUsers] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleted, setShowDeleted] = useState(false);
+  const [platformOptions, setPlatformOptions] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [selectedPlatform, setSelectedPlatform] = useState("");
+  const [filterMessage, setFilterMessage] = useState(""); // Filter message
   const reviewsPerPage = 25;
   const navigate = useNavigate();
 
@@ -40,7 +47,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const offset = (currentPage - 1) * reviewsPerPage;
-  
+
       let data;
       if (showDeleted) {
         data = await showAllDeletedReviews();
@@ -49,27 +56,35 @@ const Dashboard = () => {
       }
 
       console.log("Reviews data:", data);
-  
-      // Ensure all items in `data` are valid
+
       if (!Array.isArray(data)) {
         throw new Error("Invalid data format received from API");
       }
-  
-      // Filter out invalid objects
-      setReviews(data.filter((review) => review && review.id));
+
+      setAllReviews(data); // Save original dataset
+      setReviews(data); // Display dataset
     } catch (err) {
       setError("Failed to load reviews.");
     } finally {
       setLoading(false);
     }
   };
-  
+
+  const fetchPlatforms = async () => {
+    try {
+      const platforms = await getAllPlatforms();
+      setPlatformOptions(platforms);
+      console.log("Platforms fetched:", platforms.map((p) => p.link));
+    } catch (err) {
+      console.error("Failed to fetch platforms:", err);
+    }
+  };
 
   useEffect(() => {
     fetchReviews();
-  }, [currentPage, showDeleted]); // Re-fetch when the page or showDeleted status changes
+    fetchPlatforms();
+  }, [currentPage, showDeleted]);
 
-  // Fetch user details dynamically
   const fetchUserDetails = async (userId) => {
     if (!users[userId]) {
       try {
@@ -92,58 +107,94 @@ const Dashboard = () => {
     });
   }, [reviews]);
 
-  // Handle search
-  const handleSearch = () => {
-    if (searchTerm.trim() === "") {
-      fetchReviews(); // Reset reviews if search is cleared
+  useEffect(() => {
+    let filteredReviews = [...allReviews];
+  
+    // Filter by Genre
+    if (selectedGenre) {
+      filteredReviews = filteredReviews.filter((review) =>
+        review.genres && Array.isArray(review.genres)
+          ? review.genres.some((genre) => genre.name === selectedGenre)
+          : false
+      );
+    }
+  
+    // Filter by Platform
+    if (selectedPlatform) {
+      filteredReviews = filteredReviews.filter((review) =>
+        review.Reviews &&
+        Array.isArray(review.Reviews) &&
+        review.Reviews.some((nestedReview) =>
+          platformOptions.some(
+            (platform) =>
+              platform.id === nestedReview.platform_fk &&
+              platform.link === selectedPlatform
+          )
+        )
+      );
+    }
+  
+    // Update Filter Message
+    if (filteredReviews.length === 0) {
+      setFilterMessage("No reviews match the selected filters.");
+    } else if (selectedGenre) {
+      setFilterMessage(`Filtering reviews for genre: ${selectedGenre}`);
+    } else if (selectedPlatform) {
+      setFilterMessage(`Filtering reviews for platform: ${selectedPlatform}`);
     } else {
-      const filtered = reviews.filter((review) =>
+      setFilterMessage("");
+    }
+  
+    setReviews(filteredReviews);
+  }, [selectedGenre, selectedPlatform, allReviews, platformOptions]);
+  
+  
+  const handleSearch = () => {
+    let filteredReviews = [...allReviews];
+
+    if (searchTerm.trim()) {
+      filteredReviews = filteredReviews.filter((review) =>
         review.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      setReviews(filtered);
     }
-    setCurrentPage(1); // Reset to the first page
+
+    setReviews(filteredReviews);
+    setCurrentPage(1);
+
+    if (filteredReviews.length === 0) {
+      setFilterMessage("No reviews match your search.");
+    } else {
+      setFilterMessage("");
+    }
   };
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  // Pagination handlers
+  const handleGenreChange = (e) => {
+    setSelectedGenre(e.target.value);
+  };
+
+  const handlePlatformChange = (e) => {
+    setSelectedPlatform(e.target.value);
+  };
+
+  const resetFilters = () => {
+    setSelectedGenre("");
+    setSelectedPlatform("");
+    setSearchTerm("");
+    setFilterMessage("");
+    setCurrentPage(1);
+    setReviews(allReviews);
+  };
+
   const goToNextPage = () => setCurrentPage((prev) => prev + 1);
   const goToPreviousPage = () => setCurrentPage((prev) => (prev > 1 ? prev - 1 : 1));
+  const toggleDeletedReviews = () => setShowDeleted((prev) => !prev);
 
   const truncateText = (text, length = 50) => {
     return text.length > length ? `${text.slice(0, length)}...` : text;
-  };
-
-  const toggleDeletedReviews = () => {
-    setShowDeleted((prev) => !prev);
-    setCurrentPage(1); // Reset to the first page
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteReview(id); // Send delete request to the server
-      setReviews((prevReviews) =>
-        prevReviews.filter((review) => review.id !== id) // Remove the deleted review from state
-      );
-    } catch (error) {
-      console.error("Error deleting review:", error);
-    }
-  };
-  
-
-  const handleUndelete = async (id) => {
-    try {
-      await undeleteReview(id);
-      setReviews((prevReviews) =>
-        // Remove the undeleted review from state
-        prevReviews.filter((review) => review.id !== id)
-      );
-    } catch (error) {
-      console.error("Error undeleting review:", error);
-    }
   };
 
   return (
@@ -152,23 +203,14 @@ const Dashboard = () => {
       templateColumns="1fr"
       alignItems="center"
       justifyContent="center"
-      bg="white" // Ensure white background
+      bg="white"
       color="gray.800"
-      width="100%" // Full width
+      width="100%"
       pt={12}
       marginRight="680px"
       marginTop={20}
-      >
-      <Box
-         width="100%"
-         maxW="1500px"
-         p={8}
-         boxShadow="lg"
-         borderRadius="md"
-         bg="white"
-         textAlign="center"
-         margin="0 auto"
-      >
+    >
+      <Box width="100%" maxW="1500px" p={8} boxShadow="lg" borderRadius="md" bg="white" textAlign="center" margin="0 auto">
         <Heading as="h1" size="lg" mb={6} color="blue.500">
           Review Dashboard
         </Heading>
@@ -193,11 +235,49 @@ const Dashboard = () => {
           </Button>
         </Flex>
 
-        <Flex justifyContent="center" mb={4}>
-          <Button colorScheme="gray" onClick={toggleDeletedReviews} textColor="black">
+        <Flex mb={4} justifyContent="space-between">
+          <Box width="48%">
+          <Select placeholder="Filter by genre" onChange={handleGenreChange} value={selectedGenre}>
+            {Array.from(
+              new Set(
+                allReviews.flatMap((review) =>
+                  review.genres && Array.isArray(review.genres) ? review.genres.map((genre) => genre.name) : []
+                )
+              )
+            ).map((genreName, index) => (
+              <option key={index} value={genreName}>
+                {genreName}
+              </option>
+            ))}
+          </Select>
+
+          </Box>
+          <Box width="48%">
+            <Select placeholder="Filter by platform" onChange={handlePlatformChange} value={selectedPlatform}>
+              {platformOptions.map((platform) => (
+                <option key={platform.id} value={platform.link}>
+                  {platform.link}
+                </option>
+              ))}
+            </Select>
+          </Box>
+        </Flex>
+
+        <Flex justifyContent="flex-end" mb={4}>
+          <Button onClick={resetFilters} colorScheme="red" mr={4}>
+            Reset Filters
+          </Button>
+          <Button colorScheme="blue" onClick={toggleDeletedReviews} mr={4}>
             {showDeleted ? "Back to all reviews" : "Show deleted reviews"}
           </Button>
         </Flex>
+
+        {filterMessage && (
+          <Text mb={4} color="blue.500" fontWeight="bold" textAlign="center">
+            {filterMessage}
+          </Text>
+        )}
+
         <Flex justifyContent="center" mb={4}>
           <Button
             colorScheme="blue"
@@ -205,8 +285,8 @@ const Dashboard = () => {
           >
             Create Review
           </Button>
-
         </Flex>
+
 
         {loading ? (
           <Spinner size="xl" color="blue.500" />
@@ -216,12 +296,7 @@ const Dashboard = () => {
           </Text>
         ) : (
           <>
-            <Box
-              overflowX="auto"
-              border="1px solid"
-              borderColor="blue.200"
-              borderRadius="md"
-            >
+            <Box overflowX="auto" border="1px solid" borderColor="blue.200" borderRadius="md">
               <TableContainer>
                 <Table variant="striped" colorScheme="blue">
                   <Thead>
@@ -239,25 +314,16 @@ const Dashboard = () => {
                       <Tr key={review.id}>
                         <Td>{review.id}</Td>
                         <Td>
-                          <Link
-                            to={`/review/${review.id}`}
-                            style={{ color: "black", textDecoration: "underline" }}
-                          >
+                          <Link to={`/review/${review.id}`} style={{ color: "black", textDecoration: "underline" }}>
                             {review.title}
                           </Link>
                         </Td>
                         <Td>{truncateText(review.description)}</Td>
                         <Td>{review.user ? review.user.name : "Unknown"}</Td>
-                        <Td>
-                          {new Date(review.updatedAt).toLocaleDateString()}
-                        </Td>
+                        <Td>{new Date(review.updatedAt).toLocaleDateString()}</Td>
                         <Td>
                           {showDeleted ? (
-                            <Button
-                              colorScheme="green"
-                              size="sm"
-                              onClick={() => handleUndelete(review.id)}
-                            >
+                            <Button colorScheme="green" size="sm" onClick={() => undeleteReview(review.id)}>
                               Undelete
                             </Button>
                           ) : (
@@ -273,7 +339,7 @@ const Dashboard = () => {
                               <Button
                                 colorScheme="red"
                                 size="sm"
-                                onClick={() => handleDelete(review.id)}
+                                onClick={() => deleteReview(review.id)}
                               >
                                 Delete
                               </Button>
@@ -288,12 +354,7 @@ const Dashboard = () => {
             </Box>
 
             <Flex justifyContent="center" mt={4}>
-              <Button
-                onClick={goToPreviousPage}
-                isDisabled={currentPage === 1}
-                colorScheme="blue"
-                mr={4}
-              >
+              <Button onClick={goToPreviousPage} isDisabled={currentPage === 1} colorScheme="blue" mr={4}>
                 Previous
               </Button>
               <Button

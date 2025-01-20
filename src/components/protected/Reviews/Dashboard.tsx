@@ -47,6 +47,8 @@ const Dashboard = () => {
       } else {
         data = await getRangeOfReviews(reviewsPerPage, offset);
       }
+
+      console.log("Reviews data:", data);
   
       // Ensure all items in `data` are valid
       if (!Array.isArray(data)) {
@@ -245,9 +247,7 @@ const Dashboard = () => {
                           </Link>
                         </Td>
                         <Td>{truncateText(review.description)}</Td>
-                        <Td>
-                          {users[review.user_fk] || "Unknown"}
-                        </Td>
+                        <Td>{review.user ? review.user.name : "Unknown"}</Td>
                         <Td>
                           {new Date(review.updatedAt).toLocaleDateString()}
                         </Td>

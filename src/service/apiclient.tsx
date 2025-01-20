@@ -93,6 +93,18 @@ export const getAllReviewsByUser = async (id: number) => {
   }
 };
 
+export const createNewUser = async (data) => {
+  try {
+    const authToken = getAuthToken();
+    await axios.post(`${API_URL}/create/user`, data, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+};
+
 /*
 deleted
 export const getUsersByRole = async (role_fk: number) => {

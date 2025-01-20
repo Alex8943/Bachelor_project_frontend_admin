@@ -13,10 +13,12 @@ import {
   MenuItem,
 } from '@chakra-ui/react';
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import { signup, getRoles } from '../../../service/apiclient';
+import { useNavigate } from 'react-router-dom';
+import { createNewUser, getRoles } from '../../../service/apiclient';
 
 function CreateUser() {
+
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     lastname: '',
@@ -27,7 +29,6 @@ function CreateUser() {
 
   const [message, setMessage] = useState('');
   const [roles, setRoles] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -56,7 +57,6 @@ function CreateUser() {
     setFormData({ ...formData, role_fk: parseInt(role_fk, 10) }); // Convert to integer
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -66,7 +66,7 @@ function CreateUser() {
     }
 
     try {
-      const response = await signup({
+      await createNewUser({
         name: formData.name,
         lastname: formData.lastname,
         email: formData.email,
@@ -74,20 +74,23 @@ function CreateUser() {
         role_fk: formData.role_fk,
       });
 
-      sessionStorage.setItem('authToken', response.authToken);
-      sessionStorage.setItem('userName', response.user.name);
-      sessionStorage.setItem('userEmail', response.user.email);
-      sessionStorage.setItem('role_fk', response.user.role_fk);
-      sessionStorage.setItem('userRoleName', response.user.Role.name);
-      sessionStorage.setItem('userId', response.user.id); // Assuming user.id represents the user_fk
+      setMessage('User created successfully!');
+      setFormData({
+        name: '',
+        lastname: '',
+        email: '',
+        password: '',
+        role_fk: '',
+      });
 
-      setMessage('User created!');
-      navigate('/users'); // Redirect to profile page
+      
+      navigate('/users');
     } catch (error) {
-      console.error('Signup error:', error);
-      setMessage('Signup failed. Please try again.');
+      console.error('Error creating user:', error);
+      setMessage('Failed to create user. Please try again.');
     }
   };
+
 
   return (
     <Grid
@@ -100,72 +103,72 @@ function CreateUser() {
       width="100vw"
       pt={12}
     >
-  <Box
-    width="100%"
-    maxW="1200px"
-    p={8}
-    boxShadow="lg"
-    borderRadius="md"
-    bg="white"
-    textAlign="center"
-    margin="0 auto"
-  >
-    <Heading>Create User</Heading>
-    <VStack spacing={4}>
-      <Input
-        name="name"
-        placeholder="Name"
-        value={formData.name}
-        onChange={handleChange}
-        bg="white" // Keep background white
-        color="black" // Input text color black
-        focusBorderColor="black" // Black border on focus
-        borderColor="black" // Black border by default
-        _placeholder={{ color: "black" }} // Black placeholder
-      />
-      <Input
-        name="lastname"
-        placeholder="Lastname"
-        value={formData.lastname}
-        onChange={handleChange}
+      <Box
+        width="100%"
+        maxW="1200px"
+        p={8}
+        boxShadow="lg"
+        borderRadius="md"
         bg="white"
-        color="black"
-        focusBorderColor="black"
-        borderColor="black"
-        _placeholder={{ color: "black" }}
-      />
-      <Input
-        name="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={handleChange}
-        bg="white"
-        color="black"
-        focusBorderColor="black"
-        borderColor="black"
-        _placeholder={{ color: "black" }}
-      />
-      <Input
-        name="password"
-        placeholder="Password"
-        type="password"
-        value={formData.password}
-        onChange={handleChange}
-        bg="white"
-        color="black"
-        focusBorderColor="black"
-        borderColor="black"
-        _placeholder={{ color: "black" }}
-      />
+        textAlign="center"
+        margin="0 auto"
+      >
+        <Heading>Create User</Heading>
+        <VStack spacing={4}>
+          <Input
+            name="name"
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleChange}
+            bg="white"
+            color="black"
+            focusBorderColor="black"
+            borderColor="black"
+            _placeholder={{ color: "black" }}
+          />
+          <Input
+            name="lastname"
+            placeholder="Lastname"
+            value={formData.lastname}
+            onChange={handleChange}
+            bg="white"
+            color="black"
+            focusBorderColor="black"
+            borderColor="black"
+            _placeholder={{ color: "black" }}
+          />
+          <Input
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            bg="white"
+            color="black"
+            focusBorderColor="black"
+            borderColor="black"
+            _placeholder={{ color: "black" }}
+          />
+          <Input
+            name="password"
+            placeholder="Password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            bg="white"
+            color="black"
+            focusBorderColor="black"
+            borderColor="black"
+            _placeholder={{ color: "black" }}
+          />
           <Menu>
-            <MenuButton 
-              as={Button} 
+            <MenuButton
+              as={Button}
               rightIcon={<ChevronDownIcon />}
               bg="white"
               color="black"
               focusBorderColor="black"
               borderColor="black"
-              >
+            >
               {formData.role_fk ? `Role: ${formData.role_fk}` : 'Select Role'}
             </MenuButton>
             <MenuList
@@ -173,7 +176,6 @@ function CreateUser() {
               color="black"
               focusBorderColor="black"
               borderColor="black"
-              
             >
               {roles.map((role) => (
                 <MenuItem key={role.id} onClick={() => handleRoleSelect(role.id)}>
@@ -189,7 +191,7 @@ function CreateUser() {
         </VStack>
       </Box>
     </Grid>
-  );  
+  );
 }
 
 export default CreateUser;

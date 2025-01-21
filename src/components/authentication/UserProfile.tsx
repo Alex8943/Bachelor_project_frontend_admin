@@ -93,10 +93,6 @@ const UserProfile = () => {
                 </VStack>
             </Box>
 
-            {/* Debugging Component */}
-            <Box mt={8}>
-                <EventList />
-            </Box>
         </Grid>
     );
 };

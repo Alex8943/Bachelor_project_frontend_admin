@@ -21,7 +21,10 @@ const EventContext = createContext<EventContextType | undefined>(undefined);
 export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [events, setEvents] = useState<Event[]>([]);
 
-    const EXPIRY_DURATION = 5 * 60 * 1000; 
+    const EXPIRY_DURATION = 24 * 60 * 60 * 1000; 
+    // 24 timer, gange 60 minutter, gange 60 sekunder, gange 1000 millisekunder 
+    // EXPIRY_DURATION = enhed i millisekunder
+
     useEffect(() => {
         // Load events from localStorage and filter out expired events
         const savedEvents = localStorage.getItem("events");
